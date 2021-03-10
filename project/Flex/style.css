@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:100i,300,300i,400,400i&display=swap');
+
+/*---------------color-----------*/
+/*#6969e5,#00ff58*/
+/*---------------color-----------*/
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	 color: #444;
+	 font-family:'Roboto','Arial';
+	 padding:50px;
+	 height:100vh;
+	 background:linear-gradient(to bottom right,#6969e5,#00ff58); 
+	 display: flex;
+	 align-items: center;
+	 justify-content: center;
+	 
+}
+
+/*--------------------flex方法-------------------*/
+
+.pizza {
+	overflow: hidden;
+	max-width: 800px;
+	border-radius: 6px;
+	box-shadow: 0 5px 5px rgba(0, 0, 0, 0.38);
+	display: flex;
+}
+
+.pizza__img {
+	width:100%;
+	display: block;
+	
+}
+
+.pizza__hero {
+	flex: 0 1  47%;
+}
+
+.pizza__content {
+	flex: 1;
+	background-color: white;
+	padding: 35px 30px;
+	display:flex;
+	flex-direction: column;
+}
+
+.pizza__price {
+	background: linear-gradient(to bottom ,#6969e5,#00ff58); 
+	flex:0 1 50px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: aliceblue;
+	writing-mode:vertical-rl;
+}
+
+
+
+
+
+
+/*---------------------一般做法--------------------------
+
+.pizza__img {
+	width: 100%;
+	height: 100%;
+}
+
+.pizza__hero {
+	background-color: antiquewhite;
+	width: 50%;
+}
+
+.pizza__content {
+	width: 30%;
+	background-color: aliceblue;
+}
+
+.pizza__price {
+	width: 20%;
+	background: linear-gradient(to bottom ,#6969e5,#00ff58); 
+}*/
+
+
+/* ---------------------pizza content ----------------------*/
+/* ---------------------pizza content ----------------------*/
+.pizza__title {
+	
+  display:flex;
+  align-items:center;
+  margin-bottom:30px;
+
+}
+
+
+.pizza__heading {
+  font-size:20px;
+  flex:1;
+  font-weight: 900;
+/*	margin-right: auto;*/
+}
+
+.pizza__tag {
+  font-size:5px;
+  margin-left:10px;
+  padding:2px 7px;
+  text-transform: uppercase;
+}
+
+.pizza__tag--1 {
+  background-color:lightblue;
+  border-radius:7px;
+}
+
+.pizza__tag--2 {
+  background-color:#7de0a3;
+  border-radius:7px;
+}
+
+.pizza__description {
+	font-size: 13px;
+/*	flex: 1;*/
+	margin-bottom: auto;
+}
+
+.pizza_details {
+	display: flex;
+/*	margin-top: auto; */
+	font-weight: 900;
+}
+
+.pizza__detail { 
+	font-size: 15px;
+	display: flex;
+	align-items: center;
+	text-transform: uppercase;
+	margin-right: 15px;
+	
+}
+
+.pizza__detail span {
+	margin-right: 3px;
+}

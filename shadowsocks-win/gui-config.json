@@ -1,0 +1,131 @@
+{
+  "configs": [
+    {
+      "server": "",
+      "server_port": 8388,
+      "password": "",
+      "method": "aes-256-cfb",
+      "plugin": "",
+      "plugin_opts": "",
+      "plugin_args": "",
+      "remarks": "",
+      "timeout": 5
+    },
+    {
+      "server": "jp1-sta130.27262.pw",
+      "server_port": 60029,
+      "password": "gADDNgeQNFrm3E7",
+      "method": "chacha20-ietf-poly1305",
+      "plugin": "",
+      "plugin_opts": "",
+      "plugin_args": "",
+      "remarks": "Japan 1, 流量倍率:1.00",
+      "timeout": 5
+    },
+    {
+      "server": "us3-sta130.27262.pw",
+      "server_port": 60029,
+      "password": "gADDNgeQNFrm3E7",
+      "method": "chacha20-ietf-poly1305",
+      "plugin": "",
+      "plugin_opts": "",
+      "plugin_args": "",
+      "remarks": "United States 3, 流量倍率:1.00",
+      "timeout": 5
+    },
+    {
+      "server": "hk5-sta130.27262.pw",
+      "server_port": 60029,
+      "password": "gADDNgeQNFrm3E7",
+      "method": "chacha20-ietf-poly1305",
+      "plugin": "",
+      "plugin_opts": "",
+      "plugin_args": "",
+      "remarks": "Hong Kong 5, 流量倍率:1.00",
+      "timeout": 5
+    },
+    {
+      "server": "jp2-sta130.27262.pw",
+      "server_port": 60029,
+      "password": "gADDNgeQNFrm3E7",
+      "method": "chacha20-ietf-poly1305",
+      "plugin": "",
+      "plugin_opts": "",
+      "plugin_args": "",
+      "remarks": "Japan 2, 流量倍率:1.00",
+      "timeout": 5
+    },
+    {
+      "server": "de1-sta130.27262.pw",
+      "server_port": 60029,
+      "password": "gADDNgeQNFrm3E7",
+      "method": "chacha20-ietf-poly1305",
+      "plugin": "",
+      "plugin_opts": "",
+      "plugin_args": "",
+      "remarks": "Germany 1, 流量倍率:1.00",
+      "timeout": 5
+    },
+    {
+      "server": "au1-sta130.27262.pw",
+      "server_port": 60029,
+      "password": "gADDNgeQNFrm3E7",
+      "method": "chacha20-ietf-poly1305",
+      "plugin": "",
+      "plugin_opts": "",
+      "plugin_args": "",
+      "remarks": "Australia 1, 流量倍率:1.00",
+      "timeout": 5
+    },
+    {
+      "server": "nl1-sta130.27262.pw",
+      "server_port": 60029,
+      "password": "gADDNgeQNFrm3E7",
+      "method": "chacha20-ietf-poly1305",
+      "plugin": "",
+      "plugin_opts": "",
+      "plugin_args": "",
+      "remarks": "Netherlands 1, 流量倍率:0.10",
+      "timeout": 5
+    }
+  ],
+  "strategy": null,
+  "index": 1,
+  "global": true,
+  "enabled": false,
+  "shareOverLan": false,
+  "isDefault": false,
+  "localPort": 1080,
+  "portableMode": true,
+  "pacUrl": null,
+  "useOnlinePac": false,
+  "secureLocalPac": true,
+  "availabilityStatistics": false,
+  "autoCheckUpdate": true,
+  "checkPreRelease": false,
+  "isVerboseLogging": false,
+  "logViewer": {
+    "topMost": false,
+    "wrapText": false,
+    "toolbarShown": false,
+    "Font": "Consolas, 8pt",
+    "BackgroundColor": "Black",
+    "TextColor": "White"
+  },
+  "proxy": {
+    "useProxy": false,
+    "proxyType": 0,
+    "proxyServer": "",
+    "proxyPort": 0,
+    "proxyTimeout": 3
+  },
+  "hotkey": {
+    "SwitchSystemProxy": "",
+    "SwitchSystemProxyMode": "",
+    "SwitchAllowLan": "",
+    "ShowLogs": "",
+    "ServerMoveUp": "",
+    "ServerMoveDown": "",
+    "RegHotkeysAtStartup": false
+  }
+}

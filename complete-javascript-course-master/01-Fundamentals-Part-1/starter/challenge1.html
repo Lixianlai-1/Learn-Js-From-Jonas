@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+ <script>
+    // let markHigherBMI, markBMI, johnBMI, massMark, massJohn, heightMark, heightJohn;
+    // heightMark = 1.67;
+    // heightJohn = 1.76;
+    // massMark = 82;
+    // massJohn = 85;
+    // markBMI = massMark / (heightMark * heightMark)
+    // johnBMI = massJohn / (heightJohn * heightJohn)
+    // markBMI > johnBMI ? markHigherBMI = true : markHigherBMI = false;
+    // console.log(`Mark's BMI is ${markBMI}, and John's BMI is ${johnBMI}, so markHigherBMI is ${markHigherBMI}!` ) 
+
+  
+    const massMark = 82;
+    const massJohn = 85;
+    const heightMark = 1.67;
+    const heightJohn = 1.76;
+
+    const markBMI = (massMark / (heightMark * heightMark)).toFixed(2)
+    const johnBMI = (massJohn / heightJohn ** 2).toFixed(2)
+    let markHigherBMI;
+
+    markBMI > johnBMI ? markHigherBMI = true : markHigherBMI = false;
+    console.log(`Mark's BMI is ${markBMI}, and John's BMI is ${johnBMI}, so markHigherBMI is ${markHigherBMI}!` )
+</script>
+</html>
