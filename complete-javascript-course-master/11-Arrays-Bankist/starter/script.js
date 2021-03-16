@@ -14,8 +14,8 @@ const account1 = {
 };
 
 const account2 = {
-  owner: 'Jonas Schmedtmann',
-  // owner: 'Jessica Davis',
+  // owner: 'Jonas Schmedtmann',
+  owner: 'Jessica Davis',
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
   pin: 2222,
@@ -88,9 +88,9 @@ const displayMovements = function (movements) {
 };
 
 // 将对象中的数组作为参数;
-displayMovements(account1.movements);
+// displayMovements(account1.movements);
 
-// map集成修改;
+// map方法给每一个对象都增加username的属性;
 const converFirstNames = function (accs) {
   accs.forEach(function (acc) {
     acc.username = acc.owner //创建一个新的属性，输入小写的首字母
@@ -100,10 +100,11 @@ const converFirstNames = function (accs) {
       .join(''); //将数组中的内容用指定字符链接起来（这里是不留间隙）
   });
   accs.forEach(acc => {
-    console.log(acc);
-    console.log(acc.username);
+    // console.log(acc);
+    // console.log(acc.username);
   });
 };
+converFirstNames(accounts);
 
 //计算剩余的钱
 const calcDisplayPrintPrice = function (movs) {
@@ -113,22 +114,22 @@ const calcDisplayPrintPrice = function (movs) {
 calcDisplayPrintPrice(account2.movements);
 
 //计算总收入，总支出, 总利润
-const calcDisplaySummaryValueIn = function (movements) {
-  const income = movements
+const calcDisplaySummaryValueIn = function (account) {
+  const income = account.movements
     .filter(mov => mov > 0)
     .reduce((acc, curValue) => acc + curValue, 0);
   labelSumIn.textContent = `${income}￥`;
 
-  const expense = movements
+  const expense = account.movements
     .filter(mov => mov < 0)
     .reduce((acc, curValue) => acc + curValue);
   labelSumOut.textContent = `${Math.abs(expense)}￥`;
 
-  const interests = movements
+  const interests = account.movements
     .filter(mov => mov > 0)
     .map((deposit, i, arr) => {
-      console.log(arr);
-      return (deposit * 7.1) / 100;
+      // console.log(arr);
+      return (deposit * account.interestRate) / 100;
     })
     .filter((int, i, arr) => {
       console.log(arr);
@@ -156,9 +157,49 @@ const maxNumber = account2.movements.reduce(function (acc, cur, i) {
 
 //实现登录功能
 btnLogin.addEventListener('click', function (e) {
-  accounts.find(); //显示这个点击事件
   //在表单提交button,会导致页面重新加载，因为要使用e.preventDefault();阻止加载
-  // e.preventDefault();
+  e.preventDefault();
+  //找到input输入的值就用
+  // const inputLoginUsername = document.querySelector('.login__input--user');
+  const currentAccount = accounts.find(function (account) {
+    //返回第一个满足input输入值与对象username相等的那个对象,没有合适的会返回undefined
+    return account.username === inputLoginUsername.value;
+  }); //显示这个点击事件
+  console.log(`测试在input输入${inputLoginUsername.value}`);
+  console.log(`currentAccount`, currentAccount);
+  // console.log(currentAccount);
+
+  //如果currentAccount是undefined，直接undefined.pin会报错，而使用可选链之后，只会显示undefined，不会执行后面的.pin
+  console.log(currentAccount?.pin);
+
+  //使用可选链防止报错
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    console.log('LOGIN');
+    //显示整个页面，让透明度变为100
+    containerApp.style.opacity = 100;
+
+    //让用户名和pin的位置变成空，并消除使用状态
+    // inputLoginUsername.value = '';
+    // inputLoginPin.value = '';
+    inputLoginUsername.value = inputLoginPin.value = '';
+
+    //blur方法用来移除当前元素所获得的键盘焦点.
+    inputLoginPin.blur();
+
+    //用户登录后，欢迎用户，更改相应位置的textContent
+    //用split()将原字符串用空格隔开为数组，然后获取firstName
+    labelWelcome.textContent = `Welcome back: ${
+      currentAccount.owner.split(' ')[0]
+    }`;
+    //display Movements
+    displayMovements(currentAccount.movements);
+
+    //Display balance
+    calcDisplayPrintPrice(currentAccount.movements);
+
+    //Display summary
+    calcDisplaySummaryValueIn(currentAccount);
+  }
 });
 
 // LECTURES
