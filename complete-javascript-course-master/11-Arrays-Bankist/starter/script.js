@@ -14,6 +14,7 @@ const account1 = {
 };
 
 const account2 = {
+  // owner: 'Jonas Schmedtmann',
   owner: 'Jessica Davis',
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
@@ -61,7 +62,7 @@ const inputTransferAmount = document.querySelector('.form__input--amount');
 const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
-// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 //创建显示活动的函数
 const displayMovements = function (movements) {
@@ -77,19 +78,19 @@ const displayMovements = function (movements) {
     <div class="movements__row">
       <div class="movements__type     movements__type--${type}">2 deposit</div>
       <div class="movements__date">${i}</div>
-      <div class="movements__value">${mov}</div>
+      <div class="movements__value">${mov}￥</div>
    </div>
     `;
 
     //用insertAdjacentHTML添加进HTML当中，第一个参数是添加位置，第二个是添加的内容
-    containerMovements.insertAdjacentHTML('beforeend', html);
+    containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
 
 // 将对象中的数组作为参数;
-displayMovements(account1.movements);
+// displayMovements(account1.movements);
 
-// map集成修改;
+// map方法给每一个对象都增加username的属性;
 const converFirstNames = function (accs) {
   accs.forEach(function (acc) {
     acc.username = acc.owner //创建一个新的属性，输入小写的首字母
@@ -99,18 +100,20 @@ const converFirstNames = function (accs) {
       .join(''); //将数组中的内容用指定字符链接起来（这里是不留间隙）
   });
   accs.forEach(acc => {
-    console.log(acc);
-    console.log(acc.username);
+    // console.log(acc);
+    // console.log(acc.username);
   });
 };
+converFirstNames(accounts);
 
 //计算剩余的钱
 const calcDisplayPrintPrice = function (movs) {
   const balance = movs.reduce((acc, cur) => acc + cur, 0); //不要忘记设置初始值
-  labelBalance.textContent = `${balance}`;
+  labelBalance.textContent = `${balance}￥`;
 };
 calcDisplayPrintPrice(account2.movements);
 
+<<<<<<< HEAD
 const calcDisplaySummaryValueIn = function (movements) {
   //计算总共有多少收入
   const incomes = movements
@@ -120,6 +123,35 @@ const calcDisplaySummaryValueIn = function (movements) {
   labelSumIn.textContent = `${incomes}￥`;
 };
 calcDisplaySummaryValueIn(account1.movements);
+=======
+//计算总收入，总支出, 总利润
+const calcDisplaySummaryValueIn = function (account) {
+  const income = account.movements
+    .filter(mov => mov > 0)
+    .reduce((acc, curValue) => acc + curValue, 0);
+  labelSumIn.textContent = `${income}￥`;
+
+  const expense = account.movements
+    .filter(mov => mov < 0)
+    .reduce((acc, curValue) => acc + curValue);
+  labelSumOut.textContent = `${Math.abs(expense)}￥`;
+
+  const interests = account.movements
+    .filter(mov => mov > 0)
+    .map((deposit, i, arr) => {
+      // console.log(arr);
+      return (deposit * account.interestRate) / 100;
+    })
+    .filter((int, i, arr) => {
+      console.log(arr);
+      return int >= 1;
+    })
+    .reduce((acc, curValue) => acc + curValue, 0);
+  // const interests = income + expense;
+  labelSumInterest.textContent = `${interests.toFixed(2)}￥`;
+};
+// calcDisplaySummaryValueIn(account1.movements);
+>>>>>>> dev
 
 // console.log(account2.movements);
 const maxNumber = account2.movements.reduce(function (acc, cur, i) {
@@ -132,9 +164,59 @@ const maxNumber = account2.movements.reduce(function (acc, cur, i) {
 }, account2.movements[0]);
 
 // console.log(maxNumber);
+<<<<<<< HEAD
 
+=======
+>>>>>>> dev
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
+
+//实现登录功能
+btnLogin.addEventListener('click', function (e) {
+  //在表单提交button,会导致页面重新加载，因为要使用e.preventDefault();阻止加载
+  e.preventDefault();
+  //找到input输入的值就用
+  // const inputLoginUsername = document.querySelector('.login__input--user');
+  const currentAccount = accounts.find(function (account) {
+    //返回第一个满足input输入值与对象username相等的那个对象,没有合适的会返回undefined
+    return account.username === inputLoginUsername.value;
+  }); //显示这个点击事件
+  console.log(`测试在input输入${inputLoginUsername.value}`);
+  console.log(`currentAccount`, currentAccount);
+  // console.log(currentAccount);
+
+  //如果currentAccount是undefined，直接undefined.pin会报错，而使用可选链之后，只会显示undefined，不会执行后面的.pin
+  console.log(currentAccount?.pin);
+
+  //使用可选链防止报错
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    console.log('LOGIN');
+    //显示整个页面，让透明度变为100
+    containerApp.style.opacity = 100;
+
+    //让用户名和pin的位置变成空，并消除使用状态
+    // inputLoginUsername.value = '';
+    // inputLoginPin.value = '';
+    inputLoginUsername.value = inputLoginPin.value = '';
+
+    //blur方法用来移除当前元素所获得的键盘焦点.
+    inputLoginPin.blur();
+
+    //用户登录后，欢迎用户，更改相应位置的textContent
+    //用split()将原字符串用空格隔开为数组，然后获取firstName
+    labelWelcome.textContent = `Welcome back: ${
+      currentAccount.owner.split(' ')[0]
+    }`;
+    //display Movements
+    displayMovements(currentAccount.movements);
+
+    //Display balance
+    calcDisplayPrintPrice(currentAccount.movements);
+
+    //Display summary
+    calcDisplaySummaryValueIn(currentAccount);
+  }
+});
 
 // LECTURES
 
@@ -405,6 +487,7 @@ const usdToRmb = 7;
 
 // const afterReduce = movements.reduce((acc, cur) => acc + cur, 0); //设置了初始值，从index 0开始；没有设置就从index 1
 
+<<<<<<< HEAD
 //计算默认值时
 // const allNegativeNumber = [-1, -2, -3, -4];
 // const calcMinimumNum = allNegativeNumber.reduce(function (acc, cur, i) {
@@ -422,10 +505,14 @@ const usdToRmb = 7;
 
 // console.log(calcMinimumNum);
 // // allNegativeNumber[0]
+=======
+// console.log(afterReduce);
+>>>>>>> dev
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+<<<<<<< HEAD
 //Coding Challenge #2
 
 //将年龄数组作为参数
@@ -466,10 +553,61 @@ const usdToRmb = 7;
 
 // calcAverageHumanAge([16, 6, 10, 5, 6, 1, 4]);
 // // if the dog is <= 2 years old, humanAge = 2 * dogAge
+=======
+//Coding Challenge #2 和#3
+//将年龄数组作为参数
+// const calcAverageHumanAge = function (dogsAgeArr) {
+//第一题，得到狗的年龄
+// const humanAge = dogsAgeArr.map(dogAge =>
+//   dogAge <= 2 ? 2 * dogAge : 16 + dogAge * 4
+// );
+// console.log(`humanAge:`, humanAge);
+
+// console.log(`dogs age:`, dogsAgeArr);
+// const humanAge = dogsAgeArr.map(function (dogAge) {
+//   if (dogAge <= 2) {
+//     return 2 * dogAge;
+//   } else {
+//     return 16 + dogAge * 4;
+//   }
+// });
+// console.log(`humanAge:`, humanAge);
+
+//第二题，刨除人类年纪未满18的狗
+// const adultDogs = humanAge.filter(dogHumanAge => dogHumanAge > 18);
+// console.log(`adultDogs:`, adultDogs);
+
+//第三题，求得狗的人类平均年龄，用reduce相加，然后除以数组的Length
+// const allHumanAgeAva = humanAge.reduce(
+//   // ( 5+ 4) / 2 === (5 / 2 + 4 / 2)
+//   (acc, curValue, curIndex, arr) => acc + curValue / arr.length,
+//   0
+// );
+// console.log(allHumanAgeAva);
+
+// const allHumanAgeAva = Math.round(
+//   humanAge.reduce((acc, curValue) => acc + curValue, 0) / humanAge.length
+// );
+// console.log(allHumanAgeAva);
+//   const allHumanAgeAva = dogsAgeArr
+//     .map(dogAge => (dogAge <= 2 ? 2 * dogAge : 16 + dogAge * 4))
+//     .filter(dogHumanAge => dogHumanAge > 18)
+//     .reduce(
+//       // ( 5+ 4) / 2 === (5 / 2 + 4 / 2)
+//       (acc, curValue, curIndex, arr) => acc + curValue / arr.length,
+//       0
+//     );
+//   console.log(`allHumanAgeAva`, allHumanAgeAva);
+// };
+
+// calcAverageHumanAge([16, 6, 10, 5, 6, 1, 4]);
+// if the dog is <= 2 years old, humanAge = 2 * dogAge
+>>>>>>> dev
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+<<<<<<< HEAD
 //The Magic of Chaining Methods链接方法的魔力
 
 // const movements = [1622, 622, 1022, -4555, -776, -1, 422];
@@ -485,3 +623,28 @@ const usdToRmb = 7;
 //   .reduce((acc, curValue) => acc + curValue);
 
 // console.log(allUsdToRmbDeposit);
+=======
+//find method
+// console.log(movements);
+// const firstWithdarwal = movements.find(mov => mov < 0);
+// console.log(firstWithdarwal);
+
+// console.log(accounts);
+// //找到owner是"Jonas Schmedtmann"的那个对象
+// const accout = accounts.find(accout => {
+//   return accout.owner === 'Jonas Schmedtmann';
+// });
+// console.log(accout);
+
+//用for-of实现相同的效果
+// for (const account of accounts) {
+//   // 如果有多个相同的属性怎么处理？加上一个break就可以了，break 语句中止当前循环
+//   if (account.owner === 'Jonas Schmedtmann') {
+//     console.log(account);
+//     break;
+//   }
+// }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+>>>>>>> dev
