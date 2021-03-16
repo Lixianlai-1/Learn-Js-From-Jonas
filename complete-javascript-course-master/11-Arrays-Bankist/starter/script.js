@@ -14,7 +14,8 @@ const account1 = {
 };
 
 const account2 = {
-  owner: 'Jessica Davis',
+  owner: 'Jonas Schmedtmann',
+  // owner: 'Jessica Davis',
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
   pin: 2222,
@@ -61,7 +62,7 @@ const inputTransferAmount = document.querySelector('.form__input--amount');
 const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
-// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 //创建显示活动的函数
 const displayMovements = function (movements) {
@@ -77,12 +78,12 @@ const displayMovements = function (movements) {
     <div class="movements__row">
       <div class="movements__type     movements__type--${type}">2 deposit</div>
       <div class="movements__date">${i}</div>
-      <div class="movements__value">${mov}</div>
+      <div class="movements__value">${mov}￥</div>
    </div>
     `;
 
     //用insertAdjacentHTML添加进HTML当中，第一个参数是添加位置，第二个是添加的内容
-    containerMovements.insertAdjacentHTML('beforeend', html);
+    containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
 
@@ -107,13 +108,41 @@ const converFirstNames = function (accs) {
 //计算剩余的钱
 const calcDisplayPrintPrice = function (movs) {
   const balance = movs.reduce((acc, cur) => acc + cur, 0); //不要忘记设置初始值
-  labelBalance.textContent = `${balance}`;
+  labelBalance.textContent = `${balance}￥`;
 };
 calcDisplayPrintPrice(account2.movements);
 
-console.log(account2.movements);
+//计算总收入，总支出, 总利润
+const calcDisplaySummaryValueIn = function (movements) {
+  const income = movements
+    .filter(mov => mov > 0)
+    .reduce((acc, curValue) => acc + curValue, 0);
+  labelSumIn.textContent = `${income}￥`;
+
+  const expense = movements
+    .filter(mov => mov < 0)
+    .reduce((acc, curValue) => acc + curValue);
+  labelSumOut.textContent = `${Math.abs(expense)}￥`;
+
+  const interests = movements
+    .filter(mov => mov > 0)
+    .map((deposit, i, arr) => {
+      console.log(arr);
+      return (deposit * 7.1) / 100;
+    })
+    .filter((int, i, arr) => {
+      console.log(arr);
+      return int >= 1;
+    })
+    .reduce((acc, curValue) => acc + curValue, 0);
+  // const interests = income + expense;
+  labelSumInterest.textContent = `${interests.toFixed(2)}￥`;
+};
+// calcDisplaySummaryValueIn(account1.movements);
+
+// console.log(account2.movements);
 const maxNumber = account2.movements.reduce(function (acc, cur, i) {
-  console.log(`index${i} acc:${acc}   cur:${cur}`);
+  // console.log(`index${i} acc:${acc}   cur:${cur}`);
   if (cur > acc) {
     return cur; //当前值大于累加器时，返回当前值，作为新的累加器的值
   } else {
@@ -121,10 +150,16 @@ const maxNumber = account2.movements.reduce(function (acc, cur, i) {
   }
 }, account2.movements[0]);
 
-console.log(maxNumber);
+// console.log(maxNumber);
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//实现登录功能
+btnLogin.addEventListener('click', function (e) {
+  accounts.find(); //显示这个点击事件
+  //在表单提交button,会导致页面重新加载，因为要使用e.preventDefault();阻止加载
+  // e.preventDefault();
+});
 
 // LECTURES
 
@@ -384,3 +419,82 @@ const usdToRmb = 7;
 // const afterReduce = movements.reduce((acc, cur) => acc + cur, 0); //设置了初始值，从index 0开始；没有设置就从index 1
 
 // console.log(afterReduce);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Coding Challenge #2 和#3
+//将年龄数组作为参数
+// const calcAverageHumanAge = function (dogsAgeArr) {
+//第一题，得到狗的年龄
+// const humanAge = dogsAgeArr.map(dogAge =>
+//   dogAge <= 2 ? 2 * dogAge : 16 + dogAge * 4
+// );
+// console.log(`humanAge:`, humanAge);
+
+// console.log(`dogs age:`, dogsAgeArr);
+// const humanAge = dogsAgeArr.map(function (dogAge) {
+//   if (dogAge <= 2) {
+//     return 2 * dogAge;
+//   } else {
+//     return 16 + dogAge * 4;
+//   }
+// });
+// console.log(`humanAge:`, humanAge);
+
+//第二题，刨除人类年纪未满18的狗
+// const adultDogs = humanAge.filter(dogHumanAge => dogHumanAge > 18);
+// console.log(`adultDogs:`, adultDogs);
+
+//第三题，求得狗的人类平均年龄，用reduce相加，然后除以数组的Length
+// const allHumanAgeAva = humanAge.reduce(
+//   // ( 5+ 4) / 2 === (5 / 2 + 4 / 2)
+//   (acc, curValue, curIndex, arr) => acc + curValue / arr.length,
+//   0
+// );
+// console.log(allHumanAgeAva);
+
+// const allHumanAgeAva = Math.round(
+//   humanAge.reduce((acc, curValue) => acc + curValue, 0) / humanAge.length
+// );
+// console.log(allHumanAgeAva);
+//   const allHumanAgeAva = dogsAgeArr
+//     .map(dogAge => (dogAge <= 2 ? 2 * dogAge : 16 + dogAge * 4))
+//     .filter(dogHumanAge => dogHumanAge > 18)
+//     .reduce(
+//       // ( 5+ 4) / 2 === (5 / 2 + 4 / 2)
+//       (acc, curValue, curIndex, arr) => acc + curValue / arr.length,
+//       0
+//     );
+//   console.log(`allHumanAgeAva`, allHumanAgeAva);
+// };
+
+// calcAverageHumanAge([16, 6, 10, 5, 6, 1, 4]);
+// if the dog is <= 2 years old, humanAge = 2 * dogAge
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+//find method
+// console.log(movements);
+// const firstWithdarwal = movements.find(mov => mov < 0);
+// console.log(firstWithdarwal);
+
+// console.log(accounts);
+// //找到owner是"Jonas Schmedtmann"的那个对象
+// const accout = accounts.find(accout => {
+//   return accout.owner === 'Jonas Schmedtmann';
+// });
+// console.log(accout);
+
+//用for-of实现相同的效果
+// for (const account of accounts) {
+//   // 如果有多个相同的属性怎么处理？加上一个break就可以了，break 语句中止当前循环
+//   if (account.owner === 'Jonas Schmedtmann') {
+//     console.log(account);
+//     break;
+//   }
+// }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
