@@ -113,17 +113,17 @@ const calcDisplayPrintPrice = function (movs) {
 };
 calcDisplayPrintPrice(account2.movements);
 
-<<<<<<< HEAD
-const calcDisplaySummaryValueIn = function (movements) {
-  //计算总共有多少收入
-  const incomes = movements
-    .filter(mov => mov > 0)
-    .reduce((acc, curValue) => acc + curValue, 0);
-  //将收入放到对应的html位置上
-  labelSumIn.textContent = `${incomes}￥`;
-};
-calcDisplaySummaryValueIn(account1.movements);
-=======
+
+// const calcDisplaySummaryValueIn = function (movements) {
+//   //计算总共有多少收入
+//   const incomes = movements
+//     .filter(mov => mov > 0)
+//     .reduce((acc, curValue) => acc + curValue, 0);
+//   //将收入放到对应的html位置上
+//   labelSumIn.textContent = `${incomes}￥`;
+// };
+// calcDisplaySummaryValueIn(account1.movements);
+
 //计算总收入，总支出, 总利润
 const calcDisplaySummaryValueIn = function (account) {
   const income = account.movements
@@ -151,7 +151,7 @@ const calcDisplaySummaryValueIn = function (account) {
   labelSumInterest.textContent = `${interests.toFixed(2)}￥`;
 };
 // calcDisplaySummaryValueIn(account1.movements);
->>>>>>> dev
+
 
 // console.log(account2.movements);
 const maxNumber = account2.movements.reduce(function (acc, cur, i) {
@@ -164,10 +164,6 @@ const maxNumber = account2.movements.reduce(function (acc, cur, i) {
 }, account2.movements[0]);
 
 // console.log(maxNumber);
-<<<<<<< HEAD
-
-=======
->>>>>>> dev
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -505,14 +501,13 @@ const usdToRmb = 7;
 
 // console.log(calcMinimumNum);
 // // allNegativeNumber[0]
-=======
 // console.log(afterReduce);
->>>>>>> dev
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-<<<<<<< HEAD
+
 //Coding Challenge #2
 
 //将年龄数组作为参数
