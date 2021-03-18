@@ -76,8 +76,7 @@ const displayMovements = function (movements) {
 
     const html = `
     <div class="movements__row">
-      <div class="movements__type     movements__type--${type}">2 deposit</div>
-      <div class="movements__date">${i}</div>
+      <div class="movements__type     movements__type--${type}">${i} ${type}</div>
       <div class="movements__value">${mov}￥</div>
    </div>
     `;
@@ -89,6 +88,9 @@ const displayMovements = function (movements) {
 
 // 将对象中的数组作为参数;
 // displayMovements(account1.movements);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 // map方法给每一个对象都增加username的属性;
 const converFirstNames = function (accs) {
@@ -107,6 +109,9 @@ const converFirstNames = function (accs) {
 //这一步不能少，执行之后才会给里面的对象添加username属性
 converFirstNames(accounts);
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 //计算剩余的钱
 const calcDisplayPrintPrice = function (movs) {
   const balance = movs.reduce((acc, cur) => acc + cur, 0); //不要忘记设置初始值
@@ -116,6 +121,9 @@ const calcDisplayPrintPrice = function (movs) {
   return balance;
 };
 // calcDisplayPrintPrice(account2.movements);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 //计算总收入，总支出, 总利润
 const calcDisplaySummaryValueIn = function (account) {
@@ -144,6 +152,24 @@ const calcDisplaySummaryValueIn = function (account) {
   labelSumInterest.textContent = `${interests.toFixed(2)}￥`;
 };
 // calcDisplaySummaryValueIn(account1.movements);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+//update UI
+const updateUI = function (acc) {
+  //display Movements
+  displayMovements(acc.movements);
+
+  //Display balance
+  calcDisplayPrintPrice(acc.movements);
+
+  //Display summary
+  calcDisplaySummaryValueIn(acc);
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 // console.log(account2.movements);
 const maxNumber = account2.movements.reduce(function (acc, cur, i) {
@@ -195,14 +221,16 @@ btnLogin.addEventListener('click', function (e) {
     labelWelcome.textContent = `Welcome back: ${
       currentAccount.owner.split(' ')[0]
     }`;
-    //display Movements
-    displayMovements(currentAccount.movements);
 
-    //Display balance
-    calcDisplayPrintPrice(currentAccount.movements);
+    updateUI(currentAccount);
+    // //display Movements
+    // displayMovements(currentAccount.movements);
 
-    //Display summary
-    calcDisplaySummaryValueIn(currentAccount);
+    // //Display balance
+    // calcDisplayPrintPrice(currentAccount.movements);
+
+    // //Display summary
+    // calcDisplaySummaryValueIn(currentAccount);
   }
 
   btnTransfer.addEventListener('click', function (e) {
@@ -218,16 +246,29 @@ btnLogin.addEventListener('click', function (e) {
     const currentBalance = calcDisplayPrintPrice(currentAccount.movements);
 
     //转账的数量必须大于0，当前的余额一定要大于等于转账金额，账户金额为负时无法转账
-    if (amount > 0 && currentBalance >= amount) {
+    if (
+      amount > 0 &&
+      currentBalance >= amount &&
+      //接受账号为当前账号时，不可执行
+      currentAccount.username !== receiveAcount.username
+    ) {
       //当前用户的movement数组增加一个-amount值，到数组的最后
       //要得到当前数组，那么就需要用到前面的currentAcount，也就是必须把这个监听事件放在前一个监听事件当中
-      currentAccount.movements.push(Number(`-${amount}`));
-
-      //用最新的movements数组，让balance变化。执行求余额的函数
-      calcDisplayPrintPrice(currentAccount.movements);
+      currentAccount.movements.push(-amount);
 
       //让receivAcount的金额数组增加一个正数
       receiveAcount.movements.push(amount);
+
+      //升级UI
+      updateUI(currentAccount);
+      // //用最新的movements数组，让balance变化。执行求余额的函数
+      // calcDisplayPrintPrice(currentAccount.movements);
+
+      // //Display summary
+      // calcDisplaySummaryValueIn(currentAccount);
+
+      // //display Movements
+      // displayMovements(currentAccount.movements);
     }
   });
 });
