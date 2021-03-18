@@ -111,6 +111,9 @@ converFirstNames(accounts);
 const calcDisplayPrintPrice = function (movs) {
   const balance = movs.reduce((acc, cur) => acc + cur, 0); //不要忘记设置初始值
   labelBalance.textContent = `${balance}￥`;
+
+  //之前没有返回这个余额
+  return balance;
 };
 // calcDisplayPrintPrice(account2.movements);
 
@@ -211,15 +214,21 @@ btnLogin.addEventListener('click', function (e) {
       return account.username === inputTransferTo.value;
     });
 
-    //当前用户的movement数组增加一个-amount值，到数组的最后
-    //要得到当前数组，那么就需要用到前面的currentAcount，也就是必须把这个监听事件放在前一个监听事件当中
-    currentAccount.movements.push(Number(`-${amount}`));
+    //先计算出当前的余额
+    const currentBalance = calcDisplayPrintPrice(currentAccount.movements);
 
-    //用最新的movements数组，让balance变化。执行求余额的函数
-    calcDisplayPrintPrice(currentAccount.movements);
+    //转账的数量必须大于0，当前的余额一定要大于等于转账金额，账户金额为负时无法转账
+    if (amount > 0 && currentBalance >= amount) {
+      //当前用户的movement数组增加一个-amount值，到数组的最后
+      //要得到当前数组，那么就需要用到前面的currentAcount，也就是必须把这个监听事件放在前一个监听事件当中
+      currentAccount.movements.push(Number(`-${amount}`));
 
-    //让receivAcount的金额数组增加一个正数
-    receiveAcount.movements.push(amount);
+      //用最新的movements数组，让balance变化。执行求余额的函数
+      calcDisplayPrintPrice(currentAccount.movements);
+
+      //让receivAcount的金额数组增加一个正数
+      receiveAcount.movements.push(amount);
+    }
   });
 });
 
