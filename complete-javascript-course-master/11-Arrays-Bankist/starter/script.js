@@ -165,6 +165,7 @@ const updateUI = function (acc) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+//计算数组中最大的值
 const maxNumber = account2.movements.reduce(function (acc, cur, i) {
   // console.log(`index${i} acc:${acc}   cur:${cur}`);
   if (cur > acc) {
@@ -268,6 +269,15 @@ btnLogin.addEventListener('click', function (e) {
     inputTransferTo.value = inputTransferAmount.value = '';
     inputTransferAmount.blur();
   });
+
+  // -------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------
+
+  //Close account 放在了登录功能的里面
+  // btnClose.addEventListener('click', function (e) {
+  //   e.preventDefault();
+  //   console.log('It works');
+  // });
 });
 
 // LECTURES
