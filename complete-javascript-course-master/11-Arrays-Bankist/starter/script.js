@@ -8,7 +8,7 @@
 // Data
 const account1 = {
   owner: 'Jonas Schmedtmann',
-  movements: [22200, 450, -400, 3000, -650, -130, 70, 1300],
+  movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
   interestRate: 1.2, // %
   pin: 1111,
 };
@@ -104,6 +104,7 @@ const converFirstNames = function (accs) {
     // console.log(acc.username);
   });
 };
+//这一步不能少，执行之后才会给里面的对象添加username属性
 converFirstNames(accounts);
 
 //计算剩余的钱
@@ -111,19 +112,8 @@ const calcDisplayPrintPrice = function (movs) {
   const balance = movs.reduce((acc, cur) => acc + cur, 0); //不要忘记设置初始值
   labelBalance.textContent = `${balance}￥`;
 };
-calcDisplayPrintPrice(account2.movements);
+// calcDisplayPrintPrice(account2.movements);
 
-<<<<<<< HEAD
-const calcDisplaySummaryValueIn = function (movements) {
-  //计算总共有多少收入
-  const incomes = movements
-    .filter(mov => mov > 0)
-    .reduce((acc, curValue) => acc + curValue, 0);
-  //将收入放到对应的html位置上
-  labelSumIn.textContent = `${incomes}￥`;
-};
-calcDisplaySummaryValueIn(account1.movements);
-=======
 //计算总收入，总支出, 总利润
 const calcDisplaySummaryValueIn = function (account) {
   const income = account.movements
@@ -151,7 +141,6 @@ const calcDisplaySummaryValueIn = function (account) {
   labelSumInterest.textContent = `${interests.toFixed(2)}￥`;
 };
 // calcDisplaySummaryValueIn(account1.movements);
->>>>>>> dev
 
 // console.log(account2.movements);
 const maxNumber = account2.movements.reduce(function (acc, cur, i) {
@@ -164,10 +153,6 @@ const maxNumber = account2.movements.reduce(function (acc, cur, i) {
 }, account2.movements[0]);
 
 // console.log(maxNumber);
-<<<<<<< HEAD
-
-=======
->>>>>>> dev
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -216,6 +201,26 @@ btnLogin.addEventListener('click', function (e) {
     //Display summary
     calcDisplaySummaryValueIn(currentAccount);
   }
+
+  btnTransfer.addEventListener('click', function (e) {
+    //HTML中使用了form时，必须阻止默认点击事件
+    e.preventDefault();
+    const amount = Number(inputTransferAmount.value);
+    //找到所有的对象，遍历它们，返回属性username与用户输入值相等的那个对象
+    const receiveAcount = accounts.find(function (account) {
+      return account.username === inputTransferTo.value;
+    });
+
+    //当前用户的movement数组增加一个-amount值，到数组的最后
+    //要得到当前数组，那么就需要用到前面的currentAcount，也就是必须把这个监听事件放在前一个监听事件当中
+    currentAccount.movements.push(Number(`-${amount}`));
+
+    //用最新的movements数组，让balance变化。执行求余额的函数
+    calcDisplayPrintPrice(currentAccount.movements);
+
+    //让receivAcount的金额数组增加一个正数
+    receiveAcount.movements.push(amount);
+  });
 });
 
 // LECTURES
@@ -466,94 +471,20 @@ const usdToRmb = 7;
 
 // const withdrawal = movements
 
-// The reduce Method
-// console.log(account2.movements);
-// const afterReduce = account2.movements.reduce((acc, cur, i) => {
-//   console.log(
-//     `curIndex:${i}  accmulator:${acc}  `.padEnd(33, ' '),
-//     `curValue:${cur} `.padEnd(20, ' '),
-//     `return: curValue :${cur}`
-//   );
-//   //如果当前值大于累加器的时候，返回当前值；如果累加器大于当前值，返回累加器
-//   //最终返回数组中最大的值
-//   if (cur > acc) {
-//     return cur;
-//   } else {
-//     return acc;
-//   }
-// }, account2.movements[0]); //设置了初始值，从index 0开始；没有设置就从index 1开始
-
-// console.log(afterReduce);
+//The reduce Method
+// console.log(movements);
+// const afterReduce = movements.reduce((acc, cur, i) => {
+//   console.log(`index:${i}  accmulator:${acc}  curValue:${cur}`);
+//   return acc + cur;
+// }, 0); //设置了初始值，从index 0开始；没有设置就从index 1开始
 
 // const afterReduce = movements.reduce((acc, cur) => acc + cur, 0); //设置了初始值，从index 0开始；没有设置就从index 1
 
-<<<<<<< HEAD
-//计算默认值时
-// const allNegativeNumber = [-1, -2, -3, -4];
-// const calcMinimumNum = allNegativeNumber.reduce(function (acc, cur, i) {
-//   console.log(
-//     `curIndex:${i}    accmulator:${acc}  `.padEnd(30, ' '),
-//     `curValue:${cur} `.padEnd(17, ' '),
-//     `return: curValue :${cur}`
-//   );
-//   if (acc < cur) {
-//     return acc;
-//   } else {
-//     return cur;
-//   }
-// }, allNegativeNumber[0]);
-
-// console.log(calcMinimumNum);
-// // allNegativeNumber[0]
-=======
 // console.log(afterReduce);
->>>>>>> dev
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-<<<<<<< HEAD
-//Coding Challenge #2
-
-//将年龄数组作为参数
-// const calcAverageHumanAge = function (dogsAgeArr) {
-//   //第一题，得到狗的年龄
-//   const humanAge = dogsAgeArr.map(dogAge =>
-//     dogAge <= 2 ? 2 * dogAge : 16 + dogAge * 4
-//   );
-//   console.log(`humanAge:`, humanAge);
-
-//   // console.log(`dogs age:`, dogsAgeArr);
-//   // const humanAge = dogsAgeArr.map(function (dogAge) {
-//   //   if (dogAge <= 2) {
-//   //     return 2 * dogAge;
-//   //   } else {
-//   //     return 16 + dogAge * 4;
-//   //   }
-//   // });
-//   // console.log(`humanAge:`, humanAge);
-
-//   //第二题，刨除人类年纪未满18的狗
-//   const adultDogs = humanAge.filter(dogHumanAge => dogHumanAge > 18);
-//   console.log(`adultDogs:`, adultDogs);
-
-//   //第三题，求得狗的人类平均年龄，用reduce相加，然后除以数组的Length
-//   const allHumanAgeAva = humanAge.reduce(
-//     // ( 5+ 4) / 2 === (5 / 2 + 4 / 2)
-//     (acc, curValue, curIndex, arr) => acc + curValue / arr.length,
-//     0
-//   );
-//   console.log(allHumanAgeAva);
-
-//   // const allHumanAgeAva = Math.round(
-//   //   humanAge.reduce((acc, curValue) => acc + curValue, 0) / humanAge.length
-//   // );
-//   // console.log(allHumanAgeAva);
-// };
-
-// calcAverageHumanAge([16, 6, 10, 5, 6, 1, 4]);
-// // if the dog is <= 2 years old, humanAge = 2 * dogAge
-=======
 //Coding Challenge #2 和#3
 //将年龄数组作为参数
 // const calcAverageHumanAge = function (dogsAgeArr) {
@@ -602,28 +533,10 @@ const usdToRmb = 7;
 
 // calcAverageHumanAge([16, 6, 10, 5, 6, 1, 4]);
 // if the dog is <= 2 years old, humanAge = 2 * dogAge
->>>>>>> dev
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-<<<<<<< HEAD
-//The Magic of Chaining Methods链接方法的魔力
-
-// const movements = [1622, 622, 1022, -4555, -776, -1, 422];
-// const allUsdToRmbDeposit = movements
-//   .filter((mov, i, arr) => mov < 0)
-//   // .filter((mov, i, arr) => mov > 0)
-//   // .map((mov, i, arr) => mov * 7)
-//   .map((mov, i, arr) => {
-//     //因为前面的filter返回的是一个数组，又因为参数中有arr这个选择，所以可以得到前面是什么
-//     console.log(arr);
-//     return mov * 7;
-//   })
-//   .reduce((acc, curValue) => acc + curValue);
-
-// console.log(allUsdToRmbDeposit);
-=======
 //find method
 // console.log(movements);
 // const firstWithdarwal = movements.find(mov => mov < 0);
@@ -647,4 +560,3 @@ const usdToRmb = 7;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
->>>>>>> dev
