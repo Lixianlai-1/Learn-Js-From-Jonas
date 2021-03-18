@@ -128,38 +128,35 @@
 // ----------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------
 
-// //call和apply方法
-// const SiCuanAirline = {
-//   airline: 'SiCuan',
-//   iataCode: 'SC',
-//   booking: [],
-//   //增强字面量方法，省略函数
-//   book(name, num) {
-//     console.log(`${name} booked a flight on ${this.airline}
-//     flight:${this.iataCode}${num}
-//     `);
-//     //将相关值push到空数组之中
-//     this.booking.push({
-//       flight: `${this.airline}
-//     ${this.iataCode}${num},${name}`,
-//     });
-//   },
-// };
+//call和apply方法
+const SiCuanAirline = {
+  airline: 'SiCuan',
+  iataCode: 'SC',
+  booking: [],
+  //增强字面量方法，省略函数
+  book(name, num) {
+    console.log(`${name} booked a flight on ${this.airline}
+    flight:${this.iataCode}${num}
+    `);
+    //将相关值push到空数组之中
+    this.booking.push({
+      flight: `${this.airline}
+    ${this.iataCode}${num},${name}`,
+    });
+  },
+};
 
-// // SiCuanAirline.book('li xiao', 123);
+// SiCuanAirline.book('li xiao', 123);
 
-// //创建一个新的对象
-// const euroWings = {
-//   airline: 'euroWings',
-//   iataCode: 'EU',
-//   booking: [],
-// };
+//创建一个新的对象
+const euroWings = {
+  airline: 'euroWings',
+  iataCode: 'EU',
+  booking: [],
+};
 
-// //将SiCuanAirline的book方法赋值给book，创建一个新的regular function
-// const book = SiCuanAirline.book;
-
-// // //报错,发现airline未定义，这是因为这时的book函数的this是undefined（严格模式）
-// // book('Li Xianxiao', 123);
+//将SiCuanAirline的book方法赋值给bookFn
+const book = SiCuanAirline.book;
 
 // //函数.call(想要绑定的位置，函数后续的参数)
 // book.call(SiCuanAirline, 'Li Xianxiao', 789);
@@ -475,11 +472,12 @@
 // document.addEventListener('click', change);
 
 //做法3:Jonas的方法
-(function () {
-  const header = document.querySelector('h1');
-  header.style.color = 'red';
+//   function () {
+//     const header = document.querySelector('h1');
+//     header.style.color = 'red';
 
-  document.body.addEventListener('click', function () {
-    header.style.color = 'blue'; //是callback函数，点击以后再执行
-  });
-})();
+//     document.body.addEventListener('click', function () {
+//       header.style.color = 'blue'; //是callback函数，点击以后再执行
+//     });
+//   }
+// )();

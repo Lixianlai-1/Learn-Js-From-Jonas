@@ -104,6 +104,7 @@ const converFirstNames = function (accs) {
     // console.log(acc.username);
   });
 };
+//这一步不能少，执行之后才会给里面的对象添加username属性
 converFirstNames(accounts);
 
 //计算剩余的钱
@@ -111,7 +112,7 @@ const calcDisplayPrintPrice = function (movs) {
   const balance = movs.reduce((acc, cur) => acc + cur, 0); //不要忘记设置初始值
   labelBalance.textContent = `${balance}￥`;
 };
-calcDisplayPrintPrice(account2.movements);
+// calcDisplayPrintPrice(account2.movements);
 
 //计算总收入，总支出, 总利润
 const calcDisplaySummaryValueIn = function (account) {
@@ -200,6 +201,26 @@ btnLogin.addEventListener('click', function (e) {
     //Display summary
     calcDisplaySummaryValueIn(currentAccount);
   }
+
+  btnTransfer.addEventListener('click', function (e) {
+    //HTML中使用了form时，必须阻止默认点击事件
+    e.preventDefault();
+    const amount = Number(inputTransferAmount.value);
+    //找到所有的对象，遍历它们，返回属性username与用户输入值相等的那个对象
+    const receiveAcount = accounts.find(function (account) {
+      return account.username === inputTransferTo.value;
+    });
+
+    //当前用户的movement数组增加一个-amount值，到数组的最后
+    //要得到当前数组，那么就需要用到前面的currentAcount，也就是必须把这个监听事件放在前一个监听事件当中
+    currentAccount.movements.push(Number(`-${amount}`));
+
+    //用最新的movements数组，让balance变化。执行求余额的函数
+    calcDisplayPrintPrice(currentAccount.movements);
+
+    //让receivAcount的金额数组增加一个正数
+    receiveAcount.movements.push(amount);
+  });
 });
 
 // LECTURES
