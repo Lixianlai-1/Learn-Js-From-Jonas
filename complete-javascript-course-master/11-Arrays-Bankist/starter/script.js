@@ -76,12 +76,11 @@ const displayMovements = function (movements) {
 
     const html = `
     <div class="movements__row">
-      <div class="movements__type     movements__type--${type}">2 deposit</div>
-      <div class="movements__date">${i}</div>
+      <div class="movements__type     movements__type--${type}">${i} ${type}</div>
       <div class="movements__value">${mov}￥</div>
    </div>
     `;
-
+    //  <div class="movements__date">${i}</div>
     //用insertAdjacentHTML添加进HTML当中，第一个参数是添加位置，第二个是添加的内容
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
@@ -89,6 +88,9 @@ const displayMovements = function (movements) {
 
 // 将对象中的数组作为参数;
 // displayMovements(account1.movements);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 // map方法给每一个对象都增加username的属性;
 const converFirstNames = function (accs) {
@@ -107,12 +109,18 @@ const converFirstNames = function (accs) {
 //这一步不能少，执行之后才会给里面的对象添加username属性
 converFirstNames(accounts);
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 //计算剩余的钱
-const calcDisplayPrintPrice = function (movs) {
-  const balance = movs.reduce((acc, cur) => acc + cur, 0); //不要忘记设置初始值
-  labelBalance.textContent = `${balance}￥`;
+const calcDisplayPrintPrice = function (account) {
+  account.balance = account.movements.reduce((acc, cur) => acc + cur, 0); //不要忘记设置初始值
+  labelBalance.textContent = `${account.balance}￥`;
 };
 // calcDisplayPrintPrice(account2.movements);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 //计算总收入，总支出, 总利润
 const calcDisplaySummaryValueIn = function (account) {
@@ -142,7 +150,21 @@ const calcDisplaySummaryValueIn = function (account) {
 };
 // calcDisplaySummaryValueIn(account1.movements);
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+//升级UI，这个部分是在最后才开始做的，方便复用
+const updateUI = function (acc) {
+  calcDisplayPrintPrice(acc);
+  displayMovements(acc.movements);
+  calcDisplaySummaryValueIn(acc);
+};
+
 // console.log(account2.movements);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 const maxNumber = account2.movements.reduce(function (acc, cur, i) {
   // console.log(`index${i} acc:${acc}   cur:${cur}`);
   if (cur > acc) {
@@ -173,7 +195,10 @@ btnLogin.addEventListener('click', function (e) {
   //如果currentAccount是undefined，直接undefined.pin会报错，而使用可选链之后，只会显示undefined，不会执行后面的.pin
   console.log(currentAccount?.pin);
 
-  //使用可选链防止报错
+  // -------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------
+
+  //使用可选链防止报错，判断pin是否正确.把用户名和pin情况并删除键盘焦点
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     console.log('LOGIN');
     //显示整个页面，让透明度变为100
@@ -192,16 +217,26 @@ btnLogin.addEventListener('click', function (e) {
     labelWelcome.textContent = `Welcome back: ${
       currentAccount.owner.split(' ')[0]
     }`;
-    //display Movements
-    displayMovements(currentAccount.movements);
 
-    //Display balance
-    calcDisplayPrintPrice(currentAccount.movements);
+    // -------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------
 
-    //Display summary
-    calcDisplaySummaryValueIn(currentAccount);
+    //显示UI
+    updateUI(currentAccount);
+    // //display Movements
+    // displayMovements(currentAccount.movements);
+
+    // //Display balance
+    // calcDisplayPrintPrice(currentAccount);
+
+    // //Display summary
+    // calcDisplaySummaryValueIn(currentAccount);
   }
 
+  // -------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------
+
+  //实现转账功能与UI升级
   btnTransfer.addEventListener('click', function (e) {
     //HTML中使用了form时，必须阻止默认点击事件
     e.preventDefault();
@@ -211,15 +246,27 @@ btnLogin.addEventListener('click', function (e) {
       return account.username === inputTransferTo.value;
     });
 
-    //当前用户的movement数组增加一个-amount值，到数组的最后
-    //要得到当前数组，那么就需要用到前面的currentAcount，也就是必须把这个监听事件放在前一个监听事件当中
-    currentAccount.movements.push(Number(`-${amount}`));
+    //因为上方已经执行了一次Display balance，所以balance属性已经存在了
+    if (
+      amount > 0 &&
+      currentAccount.balance >= amount &&
+      currentAccount.username !== receiveAcount.username
+    ) {
+      //当前用户的movement数组增加一个-amount值，到数组的最后
+      //要得到当前数组，那么就需要用到前面的currentAcount，也就是必须把这个监听事件放在前一个监听事件当中
+      // currentAccount.movements.push(Number(`-${amount}`));
+      currentAccount.movements.push(-amount);
+      //让receivAcount的金额数组增加一个正数
+      receiveAcount.movements.push(amount);
 
-    //用最新的movements数组，让balance变化。执行求余额的函数
-    calcDisplayPrintPrice(currentAccount.movements);
-
-    //让receivAcount的金额数组增加一个正数
-    receiveAcount.movements.push(amount);
+      //更新所有地方的UI
+      updateUI(currentAccount);
+      // calcDisplayPrintPrice(currentAccount);
+      // displayMovements(currentAccount.movements);
+      // calcDisplaySummaryValueIn(currentAccount);
+    }
+    inputTransferTo.value = inputTransferAmount.value = '';
+    inputTransferAmount.blur();
   });
 });
 
