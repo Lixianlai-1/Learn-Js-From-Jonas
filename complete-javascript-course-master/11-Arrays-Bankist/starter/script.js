@@ -202,7 +202,10 @@ btnLogin.addEventListener('click', function (e) {
   //如果currentAccount是undefined，直接undefined.pin会报错，而使用可选链之后，只会显示undefined，不会执行后面的.pin
   console.log(currentAccount?.pin);
 
-  //使用可选链防止报错
+  // ------------------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
+
+  //让用户名和pin在点击了按钮后消失。使用可选链防止报错
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     console.log('LOGIN');
     //显示整个页面，让透明度变为100
@@ -233,6 +236,10 @@ btnLogin.addEventListener('click', function (e) {
     // calcDisplaySummaryValueIn(currentAccount);
   }
 
+  // ------------------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------
+
+  //实现转账功能
   btnTransfer.addEventListener('click', function (e) {
     //HTML中使用了form时，必须阻止默认点击事件
     e.preventDefault();
@@ -252,24 +259,38 @@ btnLogin.addEventListener('click', function (e) {
       //接受账号为当前账号时，不可执行
       currentAccount.username !== receiveAcount.username
     ) {
-      //当前用户的movement数组增加一个-amount值，到数组的最后
-      //要得到当前数组，那么就需要用到前面的currentAcount，也就是必须把这个监听事件放在前一个监听事件当中
       currentAccount.movements.push(-amount);
 
       //让receivAcount的金额数组增加一个正数
       receiveAcount.movements.push(amount);
-
-      //升级UI
-      updateUI(currentAccount);
-      // //用最新的movements数组，让balance变化。执行求余额的函数
-      // calcDisplayPrintPrice(currentAccount.movements);
-
-      // //Display summary
-      // calcDisplaySummaryValueIn(currentAccount);
-
-      // //display Movements
-      // displayMovements(currentAccount.movements);
     }
+
+    //升级UI
+    updateUI(currentAccount);
+  });
+
+  //close amount
+  console.log(accounts);
+  btnClose.addEventListener('click', function (e) {
+    e.preventDefault();
+
+    //找到accouts中的要删除的那个index
+    const deleteAccountIndex = accounts.findIndex(function (acc) {
+      return acc.username === inputCloseUsername.value;
+    });
+
+    console.log(deleteAccountIndex);
+
+    //这里input中的值一定要用value啊;求得数组中的某个值必须用arr[index]
+    //这里之所以设置可选链，是为了防止输入账号undefined时报错
+    if (accounts[deleteAccountIndex]?.pin === Number(inputClosePin.value)) {
+      accounts.splice(deleteAccountIndex, 1);
+      console.log(accounts);
+    }
+
+    //清空输入和键盘焦点
+    inputCloseUsername.value = inputClosePin.value = '';
+    inputClosePin.blur();
   });
 });
 
