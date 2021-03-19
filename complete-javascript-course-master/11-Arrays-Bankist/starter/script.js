@@ -274,20 +274,13 @@ btnLogin.addEventListener('click', function (e) {
   btnClose.addEventListener('click', function (e) {
     e.preventDefault();
 
-    //找到accouts中的要删除的那个index
-    const deleteAccountIndex = accounts.findIndex(function (acc) {
-      return acc.username === inputCloseUsername.value;
-    });
-
-    console.log(deleteAccountIndex);
-
-    //这里input中的值一定要用value啊;求得数组中的某个值必须用arr[index]
-    //这里之所以设置可选链，是为了防止输入账号undefined时报错
-    // if (accounts[deleteAccountIndex]?.pin === Number(inputClosePin.value)) {
     if (
       currentAccount?.pin === Number(inputClosePin.value) &&
       currentAccount.username === inputCloseUsername.value
     ) {
+      const deleteAccountIndex = accounts.findIndex(function (acc) {
+        return acc.username === inputCloseUsername.value;
+      });
       accounts.splice(deleteAccountIndex, 1);
       console.log(accounts);
       containerApp.style.opacity = 0;
