@@ -283,9 +283,14 @@ btnLogin.addEventListener('click', function (e) {
 
     //这里input中的值一定要用value啊;求得数组中的某个值必须用arr[index]
     //这里之所以设置可选链，是为了防止输入账号undefined时报错
-    if (accounts[deleteAccountIndex]?.pin === Number(inputClosePin.value)) {
+    // if (accounts[deleteAccountIndex]?.pin === Number(inputClosePin.value)) {
+    if (
+      currentAccount?.pin === Number(inputClosePin.value) &&
+      currentAccount.username === inputCloseUsername.value
+    ) {
       accounts.splice(deleteAccountIndex, 1);
       console.log(accounts);
+      containerApp.style.opacity = 0;
     }
 
     //清空输入和键盘焦点
