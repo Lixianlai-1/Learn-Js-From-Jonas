@@ -287,6 +287,7 @@ btnLogin.addEventListener('click', function (e) {
       console.log(deleteAccountIndex);
       accounts.splice(deleteAccountIndex, 1);
       console.log(accounts);
+      containerApp.style.opacity = 0;
     }
   });
 });
