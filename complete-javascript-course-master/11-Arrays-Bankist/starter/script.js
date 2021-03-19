@@ -273,11 +273,22 @@ btnLogin.addEventListener('click', function (e) {
   // -------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------
 
-  //Close account 放在了登录功能的里面
-  // btnClose.addEventListener('click', function (e) {
-  //   e.preventDefault();
-  //   console.log('It works');
-  // });
+  // Close account 放在了登录功能的里面
+  btnClose.addEventListener('click', function (e) {
+    e.preventDefault();
+    //判断用户输入的close名称和当前账号相同，同时Pin也要相同
+    if (
+      currentAccount.username === inputCloseUsername.value &&
+      currentAccount?.pin === Number(inputClosePin.value)
+    ) {
+      const deleteAccountIndex = accounts.findIndex(
+        acc => acc.username === inputCloseUsername.value
+      );
+      console.log(deleteAccountIndex);
+      accounts.splice(deleteAccountIndex, 1);
+      console.log(accounts);
+    }
+  });
 });
 
 // LECTURES
