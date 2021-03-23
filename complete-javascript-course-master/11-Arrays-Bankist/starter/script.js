@@ -65,12 +65,17 @@ const inputClosePin = document.querySelector('.form__input--pin');
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 //创建显示活动的函数
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   //在遍历之外,清空原有的内容
   containerMovements.innerHTML = '';
 
+  //数组排序，执行升序功能;slice()保证不影响原数组
+  const movs = sort
+    ? movements.slice().sort((firstEl, secondEl) => firstEl - secondEl)
+    : movements;
+
   //将数组中的遍历
-  movements.forEach(function (mov, i) {
+  movs.forEach(function (mov, i) {
     //注意，后面的两个判断内容要为字符串
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
@@ -273,6 +278,37 @@ btnLogin.addEventListener('click', function (e) {
   // -------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------
 
+  //The loan part
+  btnLoan.addEventListener('click', function (e) {
+    e.preventDefault();
+    //.value返回的是string，要先转化为数字
+    const amount = Number(inputLoanAmount.value);
+    //如果借款数字大于0；大于amout的百分之10。
+    //至少有一笔押金大于借款的百分之10
+    if (
+      amount > 0 &&
+      currentAccount.movements.some(function (deposit) {
+        return deposit >= amount * 0.1;
+      })
+    ) {
+      //往活动数组中添加借款
+      currentAccount.movements.push(amount);
+
+      //以当前账户升级UI，再次说明UI集成的重要性
+      updateUI(currentAccount);
+
+      //让输入位置重新变成空
+      inputLoanAmount.value = '';
+
+      //消除焦点
+      inputLoanAmount.blur();
+      console.log(currentAccount.movements);
+    }
+  });
+
+  // -------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------
+
   // Close account 放在了登录功能的里面
   btnClose.addEventListener('click', function (e) {
     e.preventDefault();
@@ -290,7 +326,11 @@ btnLogin.addEventListener('click', function (e) {
       containerApp.style.opacity = 0;
     }
     inputCloseUsername.value = inputClosePin.value = '';
+    inputClosePin.blur();
   });
+
+  // -------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------
 });
 
 // LECTURES
@@ -630,3 +670,102 @@ const usdToRmb = 7;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
+
+// //some返回布尔值
+// console.log(
+//   movements.some(function (e) {
+//     return e === 200;
+//   })
+// );
+
+// console.log(
+//   movements.some(function (e) {
+//     return e > 0;
+//   })
+// );
+
+// // every method
+// console.log(account4.movements);
+
+// //当数组中的所有元素都通过条件后，返回true，否则返回false
+// console.log(
+//   account4.movements.every(function (mov) {
+//     return mov > 0;
+//   })
+// );
+
+//the separate method，分开使用callback函数
+
+// //设置一个函数返回大于0的数
+// const deposit = mov => mov > 0;
+
+// //筛选数组中大于0的数
+// console.log(account4.movements.filter(deposit));
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+//flat()和flatMap()
+
+// //展开语法，将数组中的第一层元素单独拿出来
+// const arr = [[1, 2, 3], [4, 5], 6, 7];
+// console.log(...arr);
+
+// //flat method，将数组中的值不分层次的分开
+// // console.log(arr.flat());
+
+// // const arrDepth4 = [[[[[1, 2, 3]]]]];
+
+// // console.log(arrDepth4.flat());
+// // console.log(arrDepth4.flat(2));
+// // console.log(arrDepth4.flat(3));
+// // console.log(arrDepth4.flat(4));
+
+// //找到所有的accounts的movements，将它们集合为一个数据
+// //返回所有的movements到一个数组中
+// const allMovements = accounts.map(acount => acount.movements);
+
+// //将嵌套的数组中的值拿出来，用flat()
+// const allMovementsFlat = allMovements.flat();
+// console.log(allMovementsFlat);
+
+// const allMovementsFlatReduce = allMovementsFlat.reduce(function (
+//   acc,
+//   curValue
+// ) {
+//   return acc + curValue;
+// },
+// 0);
+// console.log(allMovementsFlatReduce);
+
+// //使用chaining method
+// const allMovementsChaining = accounts
+//   .flatMap(acount => acount.movements)
+//   .reduce(function (acc, curValue) {
+//     return acc + curValue;
+//   }, 0);
+// console.log(allMovementsChaining);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+//sort method
+
+//string
+const str = ['March', 'Jan', 'Feb', 'Dec'];
+str.sort();
+
+//sort method 会影响元素组
+// console.log(str);
+
+console.log(movements);
+//如果比较顺序[a, b] 返回值 < 0  保持顺序[a, b]
+//如果比较顺序[a, b] 返回值 > 0  调换顺序[b, a]
+
+//若fistEl > secondEl 那么返回值是大于0，切换位置，小的在前，是升序
+movements.sort((firstEl, secondEl) => firstEl - secondEl);
+console.log(movements);
+
+//若SecondEl > firstEl 那么返回值是大于0，切换位置，大的在前，是降序
+movements.sort((firstEl, secondEl) => secondEl - firstEl);
+console.log(movements);
