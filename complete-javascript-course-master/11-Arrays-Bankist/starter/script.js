@@ -331,6 +331,15 @@ btnLogin.addEventListener('click', function (e) {
 
   // -------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------
+
+  // the sort button part
+
+  let sorted = false;
+  btnSort.addEventListener('click', function (e) {
+    e.preventDefault();
+    displayMovements(currentAccount.movements, !sorted);
+    sorted = !sorted; //sorted原来是false，!sorted变成true，让sorted变成true；再一次点击时，!sorted就变成false
+  });
 });
 
 // LECTURES
@@ -751,21 +760,71 @@ const usdToRmb = 7;
 
 //sort method
 
-//string
-const str = ['March', 'Jan', 'Feb', 'Dec'];
-str.sort();
+// //string
+// const str = ['March', 'Jan', 'Feb', 'Dec'];
+// str.sort();
 
-//sort method 会影响元素组
-// console.log(str);
+// //sort method 会影响元素组
+// // console.log(str);
 
-console.log(movements);
-//如果比较顺序[a, b] 返回值 < 0  保持顺序[a, b]
-//如果比较顺序[a, b] 返回值 > 0  调换顺序[b, a]
+// console.log(movements);
+// //如果比较顺序[a, b] 返回值 < 0  保持顺序[a, b]
+// //如果比较顺序[a, b] 返回值 > 0  调换顺序[b, a]
 
-//若fistEl > secondEl 那么返回值是大于0，切换位置，小的在前，是升序
-movements.sort((firstEl, secondEl) => firstEl - secondEl);
-console.log(movements);
+// //若fistEl > secondEl 那么返回值是大于0，切换位置，小的在前，是升序
+// movements.sort((firstEl, secondEl) => firstEl - secondEl);
+// console.log(movements);
 
-//若SecondEl > firstEl 那么返回值是大于0，切换位置，大的在前，是降序
-movements.sort((firstEl, secondEl) => secondEl - firstEl);
-console.log(movements);
+// //若SecondEl > firstEl 那么返回值是大于0，切换位置，大的在前，是降序
+// movements.sort((firstEl, secondEl) => secondEl - firstEl);
+// console.log(movements);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Creating and Filling Arrays
+
+// //创建数组的常见方式
+// console.log([1, 2, 3]);
+// console.log(new Array(1, 2, 3));
+
+// //创建一个数组，其中的四个元素都是空
+// const x = new Array(4);
+// console.log(x);
+
+// //如何将空的这个数组填充一定的内容，用fill方法,会改变原数组
+// console.log(x.fill(4));
+// console.log(x.fill(0, 1, 3)); //从index1开始，到index4之前的改变
+
+const arr = [1, 2, 3, 4, 5, 6, 7];
+
+//相当于是对arr这个数组执行map函数，然后放入return的内容
+const z = Array.from(
+  arr,
+  (cur, index) => cur + 3 + index //省略了return，注意只有省略了{},才能省略return，不然会得到undefined的结果
+);
+// console.log(z);
+
+// console.log(arr);
+// arr.fill('', 0, 3);
+// console.log(arr);
+
+// //如果不加以限制索引，就会将原有的所有内容填充
+// arr.fill('$');
+// console.log(arr);
+
+// const y = Array.from({ length: 8 }, function (cur, index) {
+//   return index;
+// });
+
+// console.log(y);
+// console.log({ length: 8 });
+
+//小挑战：创建一个数组，其中有100个数字，每个数字在1到6之间
+console.log(Math.trunc(Math.random() * 6 + 1)); //自己想出来的
+
+const randomeDiceNumber100 = Array.from({ length: 100 }, () =>
+  Math.trunc(Math.random() * 6 + 1)
+);
+
+console.log(randomeDiceNumber100);
