@@ -339,6 +339,13 @@ btnLogin.addEventListener('click', function (e) {
     e.preventDefault();
     displayMovements(currentAccount.movements, !sorted);
     sorted = !sorted; //sorted原来是false，!sorted变成true，让sorted变成true；再一次点击时，!sorted就变成false
+
+    //Array.from先将nodelist转化为数组，然后才能用数组的方法，比如下面的replace
+    const nodeToArray = Array.from(
+      document.querySelectorAll('.movements__value'),
+      el => el.textContent.replace('￥', '😎')
+    );
+    console.log(nodeToArray);
   });
 });
 
@@ -796,13 +803,13 @@ const usdToRmb = 7;
 // console.log(x.fill(4));
 // console.log(x.fill(0, 1, 3)); //从index1开始，到index4之前的改变
 
-const arr = [1, 2, 3, 4, 5, 6, 7];
+// const arr = [1, 2, 3, 4, 5, 6, 7];
 
 //相当于是对arr这个数组执行map函数，然后放入return的内容
-const z = Array.from(
-  arr,
-  (cur, index) => cur + 3 + index //省略了return，注意只有省略了{},才能省略return，不然会得到undefined的结果
-);
+// const z = Array.from(
+//   arr,
+//   (cur, index) => cur + 3 + index //省略了return，注意只有省略了{},才能省略return，不然会得到undefined的结果
+// );
 // console.log(z);
 
 // console.log(arr);
@@ -820,11 +827,203 @@ const z = Array.from(
 // console.log(y);
 // console.log({ length: 8 });
 
-//小挑战：创建一个数组，其中有100个数字，每个数字在1到6之间
-console.log(Math.trunc(Math.random() * 6 + 1)); //自己想出来的
+// //小挑战：创建一个数组，其中有100个数字，每个数字在1到6之间
+// console.log(Math.trunc(Math.random() * 6 + 1)); //自己想出来的
 
-const randomeDiceNumber100 = Array.from({ length: 100 }, () =>
-  Math.trunc(Math.random() * 6 + 1)
+// const randomeDiceNumber100 = Array.from({ length: 100 }, () =>
+//   Math.trunc(Math.random() * 6 + 1)
+// );
+
+// console.log(randomeDiceNumber100);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+// // Array Practice
+// //1.计算所有的账号的deposits加起来是多少
+// const bankDeposits = accounts
+//   //flapMap相当于先用了flap方法，然后再用map方法,返回一个新的数组
+//   .flatMap(accound => accound.movements)
+//   .filter(el => el > 0)
+//   .reduce((accumulator, curValue) => accumulator + curValue, 0);
+
+// // console.log(bankDeposits);
+
+// //2.计算所有超过1000的deposits到底有几个
+// // const over1000DepositsLength = accounts
+// //   .flatMap(accound => accound.movements)
+// //   .filter(el => el > 1000).length;
+
+// const over1000DepositsLength = accounts
+//   .flatMap(accound => accound.movements)
+//   .reduce(
+//     (counter, curValue) =>
+//       //这里省略掉了return，这个return是下面的三元运算符计算之后生效
+//       //也就是返回了三元运算符之后的新数组
+//       curValue > 1000
+//         ? ++counter //counter在加之后
+//         : counter,
+//     0
+//   );
+
+// // console.log(over1000DepositsLength);
+
+// const { deposits, withdrwals } = accounts
+//   .flatMap(accound => accound.movements)
+//   .reduce(
+//     (accumulator, curValue) => {
+//       curValue > 0
+//         ? (accumulator.deposits += curValue)
+//         : (accumulator.withdrwals += curValue);
+//       return accumulator; //必须返回对象，不然无法进行下一次的属性操作
+//     },
+//     //将初始值设置为对象
+//     { deposits: 0, withdrwals: 0 }
+//   );
+
+// // console.log(deposits, withdrwals);
+
+// //--------------------------------------------------------------------------------------
+// //制作一个完整的大写字符串首字母的函数，精简代码
+// const upperStringFirstIndex = function (str) {
+//   return str[0].toUpperCase() + str.slice(1);
+// };
+// //--------------------------------------------------------------------------------------
+
+// //4.convertTitleCase  传输一些文本字符串，能动自动大写首字母，并忽视a等小写
+// const convertTitleCase = function (title) {
+//   //设定一些exception，因为a、and等在标题中也不会大写
+//   const exceptions = ['a', 'an', 'and', 'the', 'with', 'but', 'or', 'on', 'in'];
+
+//   // - 先将所有字母小写化
+//   // - 用split以空格分开形成数组,注意''与' '的区别
+//   // - 然后用map方法执行首字母首字母大写,然后用slice方法拼接
+//   // - 发现and, the, with等还是大写，需要进行删改
+//   // - 当map返回的新数组，用exceptions是否包含新数组中的元素，如果包含，就还是原来的；反之大写
+//   // - 计算后的数组，使用join方法将其用空格号连接起来
+//   // - 然后需要完整的字符串首字母是大写，比如and开头就需要变成And
+//   // - 制作一个完整的大写字符串首字母的函数，精简代码
+
+//   let afterOperate = title
+//     .toLowerCase()
+//     .split(' ')
+//     .map(str => (exceptions.includes(str) ? str : upperStringFirstIndex(str)))
+//     .join(' ');
+
+//   return upperStringFirstIndex(afterOperate);
+
+//   // console.log(title.toLowerCase().split(''));
+// };
+
+// console.log(convertTitleCase('i aM fIne'));
+// console.log(convertTitleCase('aNd yOu?'));
+// console.log(convertTitleCase('this Is A nice title'));
+// console.log(
+//   convertTitleCase('aNd there is another nice title With A EXSAMPLe')
+// );
+
+// Code Chanlenge4
+
+const dogs = [
+  { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+  { weight: 8, curFood: 200, owners: ['Matilda'] },
+  { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
+  { weight: 32, curFood: 340, owners: ['Michael'] },
+];
+
+// 1.
+// - 遍历dogs数组，计算建议的饭量
+// - 怎么给对象增加属性,这里卡住了
+// -
+
+const recommendedDogPortion = dogs.map(
+  // 2**3在JavaScript中的意思就是2的3次方
+  dog => (dog.recommendedFood = Math.trunc(dog.weight ** 0.75 * 28))
 );
 
-console.log(randomeDiceNumber100);
+// console.log(dogs);
+
+// 2
+// - 用find和includes方法
+
+// dogs.forEach(dog => {
+//   if (dog.owners.includes('Sarah')) {
+//     if (dog.curFood > dog.recommendedFood) {
+//       console.log('eating too much');
+//     } else if (dog.curFood < dog.recommendedFood) {
+//       console.log('eating to little');
+//     } else {
+//       console.log('eating well');
+//     }
+//   }
+// });
+
+const sarahObj = dogs.find(dog => dog.owners.includes('Sarah'));
+
+// sarahObj.curFood > sarahObj.recommendedFood
+//   ? console.log('eating too much')
+//   : console.log('eating to little');
+
+// console.log(
+//   `Sarah's dog is eating too ${
+//     sarahObj.curFood > sarahObj.recommendedFood ? 'much!' : 'little!'
+//   }`
+// );
+
+//3.
+// - 用filter方法，返回满足条件的所有元素，组成一个数组
+// - find是返回满足测试函数的第一个元素，注意filter和find的区别
+
+const ownersEatTooMuch = dogs
+  .filter(dog => dog.curFood > dog.recommendedFood)
+  .flatMap(dog => dog.owners);
+// console.log(ownersEatTooMuch);
+
+const ownersEatTooLittle = dogs
+  .filter(dog => dog.curFood < dog.recommendedFood)
+  .flatMap(dog => dog.owners);
+// console.log(ownersEatTooLittle);
+
+//4.
+// - Log a string to the console for each array created in 3.
+// - "Matilda and Alice and Bob's dogs eat too much!"
+// - "Sarah and John and Michael's dogs eat too little!"
+// - 直觉是要用reduce
+// console.log(
+//   ownersEatTooMuch.reduce((acc, curValue, curIndex, arr) => {
+//     return curValue + ' and ' + acc;
+//   }, ' dogs eat too much')
+// );
+
+// console.log(`${ownersEatTooLittle.join(' and ')} eat too little`);
+// console.log(`${ownersEatTooMuch.join(' and ')} eat too much`);
+
+//5.
+// -Log to the console whether there is any dog eating exactly the amount of food that is recommended
+// -
+// -
+// -
+// console.log(dogs.some(dog => dog.recommendedFood === dog.curFood));
+
+//6.
+//Log to the console whether there is any dog eating an okay amount of food(just true or false)
+const ergodicDogs = dog =>
+  dog.curFood > dog.recommendedFood * 0.9 &&
+  dog.curFood < dog.recommendedFood * 1.1;
+
+const okBoolean = dogs.some(ergodicDogs);
+
+//7.
+const okDogs = dogs.filter(ergodicDogs);
+
+// console.log(okDogs);
+
+//8.
+const shallowCopyDogs = dogs
+  .slice()
+  .sort(
+    (firstEl, secondEl) => firstEl.recommendedFood - secondEl.recommendedFood
+  );
+
+// console.log(dogs);
+console.log(shallowCopyDogs);
