@@ -924,22 +924,22 @@ const usdToRmb = 7;
 
 // Code Chanlenge4
 
-const dogs = [
-  { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
-  { weight: 8, curFood: 200, owners: ['Matilda'] },
-  { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
-  { weight: 32, curFood: 340, owners: ['Michael'] },
-];
+// const dogs = [
+//   { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+//   { weight: 8, curFood: 200, owners: ['Matilda'] },
+//   { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
+//   { weight: 32, curFood: 340, owners: ['Michael'] },
+// ];
 
-// 1.
-// - 遍历dogs数组，计算建议的饭量
-// - 怎么给对象增加属性,这里卡住了
-// -
+// // 1.
+// // - 遍历dogs数组，计算建议的饭量
+// // - 怎么给对象增加属性,这里卡住了
+// // -
 
-const recommendedDogPortion = dogs.map(
-  // 2**3在JavaScript中的意思就是2的3次方
-  dog => (dog.recommendedFood = Math.trunc(dog.weight ** 0.75 * 28))
-);
+// const recommendedDogPortion = dogs.map(
+//   // 2**3在JavaScript中的意思就是2的3次方
+//   dog => (dog.recommendedFood = Math.trunc(dog.weight ** 0.75 * 28))
+// );
 
 // console.log(dogs);
 
@@ -958,7 +958,7 @@ const recommendedDogPortion = dogs.map(
 //   }
 // });
 
-const sarahObj = dogs.find(dog => dog.owners.includes('Sarah'));
+// const sarahObj = dogs.find(dog => dog.owners.includes('Sarah'));
 
 // sarahObj.curFood > sarahObj.recommendedFood
 //   ? console.log('eating too much')
@@ -974,14 +974,14 @@ const sarahObj = dogs.find(dog => dog.owners.includes('Sarah'));
 // - 用filter方法，返回满足条件的所有元素，组成一个数组
 // - find是返回满足测试函数的第一个元素，注意filter和find的区别
 
-const ownersEatTooMuch = dogs
-  .filter(dog => dog.curFood > dog.recommendedFood)
-  .flatMap(dog => dog.owners);
-// console.log(ownersEatTooMuch);
+// const ownersEatTooMuch = dogs
+//   .filter(dog => dog.curFood > dog.recommendedFood)
+//   .flatMap(dog => dog.owners);
+// // console.log(ownersEatTooMuch);
 
-const ownersEatTooLittle = dogs
-  .filter(dog => dog.curFood < dog.recommendedFood)
-  .flatMap(dog => dog.owners);
+// const ownersEatTooLittle = dogs
+//   .filter(dog => dog.curFood < dog.recommendedFood)
+//   .flatMap(dog => dog.owners);
 // console.log(ownersEatTooLittle);
 
 //4.
@@ -1005,25 +1005,25 @@ const ownersEatTooLittle = dogs
 // -
 // console.log(dogs.some(dog => dog.recommendedFood === dog.curFood));
 
-//6.
-//Log to the console whether there is any dog eating an okay amount of food(just true or false)
-const ergodicDogs = dog =>
-  dog.curFood > dog.recommendedFood * 0.9 &&
-  dog.curFood < dog.recommendedFood * 1.1;
+// //6.
+// //Log to the console whether there is any dog eating an okay amount of food(just true or false)
+// const ergodicDogs = dog =>
+//   dog.curFood > dog.recommendedFood * 0.9 &&
+//   dog.curFood < dog.recommendedFood * 1.1;
 
-const okBoolean = dogs.some(ergodicDogs);
+// const okBoolean = dogs.some(ergodicDogs);
 
-//7.
-const okDogs = dogs.filter(ergodicDogs);
+// //7.
+// const okDogs = dogs.filter(ergodicDogs);
 
-// console.log(okDogs);
+// // console.log(okDogs);
 
-//8.
-const shallowCopyDogs = dogs
-  .slice()
-  .sort(
-    (firstEl, secondEl) => firstEl.recommendedFood - secondEl.recommendedFood
-  );
+// //8.
+// const shallowCopyDogs = dogs
+//   .slice()
+//   .sort(
+//     (firstEl, secondEl) => firstEl.recommendedFood - secondEl.recommendedFood
+//   );
 
-// console.log(dogs);
-console.log(shallowCopyDogs);
+// // console.log(dogs);
+// console.log(shallowCopyDogs);
