@@ -339,7 +339,3 @@ btnLogin.addEventListener('click', function (e) {
 // LECTURES
 
 //二进制 0与1
-console.log(23 === 23.0);
-
-console.log(0.1 + 0.2);
-console.log(0.1 + 0.2 === 0.3); //居然不相等，JavaScript不适合做财务计算
