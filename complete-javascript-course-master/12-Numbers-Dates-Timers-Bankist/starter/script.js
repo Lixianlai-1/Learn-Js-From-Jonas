@@ -339,3 +339,4 @@ btnLogin.addEventListener('click', function (e) {
 // LECTURES
 
 //二进制 0与1
+console.log();
