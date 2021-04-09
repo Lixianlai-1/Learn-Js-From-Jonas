@@ -8,6 +8,32 @@
 // Data
 
 // DIFFERENT DATA! Contains movement dates, currency and locale
+// Elements
+const labelWelcome = document.querySelector('.welcome');
+const labelDate = document.querySelector('.date');
+const labelBalance = document.querySelector('.balance__value');
+const labelSumIn = document.querySelector('.summary__value--in');
+const labelSumOut = document.querySelector('.summary__value--out');
+const labelSumInterest = document.querySelector('.summary__value--interest');
+const labelTimer = document.querySelector('.timer');
+
+const containerApp = document.querySelector('.app');
+const containerMovements = document.querySelector('.movements');
+
+const btnLogin = document.querySelector('.login__btn');
+const btnTransfer = document.querySelector('.form__btn--transfer');
+const btnLoan = document.querySelector('.form__btn--loan');
+const btnClose = document.querySelector('.form__btn--close');
+const btnSort = document.querySelector('.btn--sort');
+
+const inputLoginUsername = document.querySelector('.login__input--user');
+const inputLoginPin = document.querySelector('.login__input--pin');
+const inputTransferTo = document.querySelector('.form__input--to');
+const inputTransferAmount = document.querySelector('.form__input--amount');
+const inputLoanAmount = document.querySelector('.form__input--loan-amount');
+const inputCloseUsername = document.querySelector('.form__input--user');
+const inputClosePin = document.querySelector('.form__input--pin');
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 const account1 = {
   owner: 'Jonas Schmedtmann',
@@ -48,6 +74,8 @@ const account2 = {
   currency: 'USD',
   locale: 'en-US',
 };
+
+const accounts = [account1, account2];
 
 //创建显示活动的函数
 const displayMovements = function (movements, sort = false) {
@@ -97,7 +125,7 @@ const converFirstNames = function (accs) {
   });
 };
 //这一步不能少，执行之后才会给里面的对象添加username属性
-converFirstNames(accounts);
+// converFirstNames(accounts);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,7 +218,7 @@ btnLogin.addEventListener('click', function (e) {
   // -------------------------------------------------------------------------------------
 
   //使用可选链防止报错，判断pin是否正确.把用户名和pin情况并删除键盘焦点
-  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+  if (currentAccount?.pin === +inputLoginPin.value) {
     console.log('LOGIN');
     //显示整个页面，让透明度变为100
     containerApp.style.opacity = 100;
@@ -231,7 +259,7 @@ btnLogin.addEventListener('click', function (e) {
   btnTransfer.addEventListener('click', function (e) {
     //HTML中使用了form时，必须阻止默认点击事件
     e.preventDefault();
-    const amount = Number(inputTransferAmount.value);
+    const amount = +inputTransferAmount.value;
     //找到所有的对象，遍历它们，返回属性username与用户输入值相等的那个对象
     const receiveAcount = accounts.find(function (account) {
       return account.username === inputTransferTo.value;
@@ -267,7 +295,7 @@ btnLogin.addEventListener('click', function (e) {
   btnLoan.addEventListener('click', function (e) {
     e.preventDefault();
     //.value返回的是string，要先转化为数字
-    const amount = Number(inputLoanAmount.value);
+    const amount = +inputLoanAmount.value;
     //如果借款数字大于0；大于amout的百分之10。
     //至少有一笔押金大于借款的百分之10
     if (
@@ -300,7 +328,7 @@ btnLogin.addEventListener('click', function (e) {
     //判断用户输入的close名称和当前账号相同，同时Pin也要相同
     if (
       currentAccount.username === inputCloseUsername.value &&
-      currentAccount?.pin === Number(inputClosePin.value)
+      currentAccount?.pin === +inputClosePin.value
     ) {
       const deleteAccountIndex = accounts.findIndex(
         acc => acc.username === inputCloseUsername.value
@@ -337,6 +365,83 @@ btnLogin.addEventListener('click', function (e) {
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
-
 //二进制 0与1
-console.log();
+
+// console.log(23 === 23.0);
+
+// console.log(0.1 + 0.2);
+
+// 3/10 === 3.33333333无限 而0.1 + 0.2 === 0.3所以是不相等的
+// console.log(0.1 + 0.2 === 0.3);
+
+//Converse
+
+//Parsing
+
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
+//Math and Rounding
+
+//Math.sqrt() 函数返回一个数的平方根
+console.log(Math.sqrt(81)); // =>9
+console.log(81 ** (1 / 2)); //81的2分之1次方，81的平方根 => 9
+console.log(8 ** (1 / 3)); // =>2
+console.log(2 ** 2); // 2的2次方 =>4
+
+//Math.max() 函数返回一组数中的最大值。
+//如果给定的参数中至少有一个参数无法被转换成数字，则会返回 NaN。
+console.log(Math.max(1, 2, 3, 4, 5)); // => 5
+console.log(Math.max(1, 2, 3, 4, '5')); //会进行数字转换 => 5
+console.log(Math.max(1, 2, 3, 4, '5px')); // => NaN
+
+//Math.min() 返回零个或更多个数值的最小值,如果任一参数不能转换为数值
+console.log(Math.min(1, 2, 3, 4, 5)); // 1
+console.log(Math.min('1', 2, 3, 4, 5)); // 1
+console.log(Math.min('1px', 2, 3, 4, 5)); // NaN
+
+//parseFloat/parseInt  vs   Math.min/Math.max
+console.log(Math.min('1px', 2, 3, 4, 5)); // NaN
+console.log(parseInt('1px')); // 1
+
+console.log(Math.max(1, 2, 3, 4, '5px')); // NaN
+console.log(parseInt('5px')); // 5
+
+//Math.PI 表示一个圆的周长与直径的比例，约为3.1415
+console.log(Math.PI * Number.parseFloat('10px') ** 2); //得到面积，pi*半径的平方
+
+//先得出一个在1到6之间的整数
+const randomOneToSix = Math.trunc(Math.random() * 6) + 1;
+console.log(randomOneToSix);
+
+//制作一个函数，得到min/max之间的随机整数
+//Math.trunc(Math.random() * (max - min) + 1)    在0到(max-min)之间
+//然后在后面再加上min,范围大小就变成min...(max - min) + min   范围也就是min...max
+//0...(max-min)   => 0+min ....(max-min)+min    => min...Max
+const randomMinMax = (min, max) =>
+  Math.trunc(Math.random() * (max - min) + 1) + min;
+console.log(randomMinMax(11, 25));
+
+//rounding integers
+//Math.ceil() 函数返回大于或等于一个给定数字的最小整数,可以理解为向上取整
+console.log(Math.ceil(1.2)); // 2
+console.log(Math.ceil('1.2')); //强制类型转行 => 2
+console.log(Math.ceil('1.2px')); //NaN
+
+//Math.floor() 返回小于或等于一个给定数字的最大整数,可以理解为向下取整
+console.log(Math.floor(1.9)); // 1
+console.log(Math.floor('1.9')); // 强制类型转换 1
+console.log(Math.floor('1.9px')); // NaN
+
+//Math.round() 返回一个四舍五入的整数
+console.log(Math.round(1.2));
+
+//rounding decimals
+
+//指定位数的四舍五入，toFixed() 方法使用定点表示法来格式化一个数值
+console.log((1.2).toFixed(0)); //四舍五入求0位 得到1
+// console.log('1.2'.toFixed(0)); //无法转换类型
+console.log((1.25).toFixed(1)); // 1.3
+console.log((1.217).toFixed(2)); // 1.22
+console.log((1.213).toFixed(2)); // 1.21
+console.log(+(1.2135).toFixed(3)); // 1.214 将返回的字符串强制转换为数字
