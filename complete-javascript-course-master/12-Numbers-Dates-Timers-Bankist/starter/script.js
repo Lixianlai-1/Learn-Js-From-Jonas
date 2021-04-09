@@ -1,40 +1,8 @@
 'use strict';
 
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
 // BANKIST APP
 
-/////////////////////////////////////////////////
 // Data
-
-// DIFFERENT DATA! Contains movement dates, currency and locale
-// Elements
-const labelWelcome = document.querySelector('.welcome');
-const labelDate = document.querySelector('.date');
-const labelBalance = document.querySelector('.balance__value');
-const labelSumIn = document.querySelector('.summary__value--in');
-const labelSumOut = document.querySelector('.summary__value--out');
-const labelSumInterest = document.querySelector('.summary__value--interest');
-const labelTimer = document.querySelector('.timer');
-
-const containerApp = document.querySelector('.app');
-const containerMovements = document.querySelector('.movements');
-
-const btnLogin = document.querySelector('.login__btn');
-const btnTransfer = document.querySelector('.form__btn--transfer');
-const btnLoan = document.querySelector('.form__btn--loan');
-const btnClose = document.querySelector('.form__btn--close');
-const btnSort = document.querySelector('.btn--sort');
-
-const inputLoginUsername = document.querySelector('.login__input--user');
-const inputLoginPin = document.querySelector('.login__input--pin');
-const inputTransferTo = document.querySelector('.form__input--to');
-const inputTransferAmount = document.querySelector('.form__input--amount');
-const inputLoanAmount = document.querySelector('.form__input--loan-amount');
-const inputCloseUsername = document.querySelector('.form__input--user');
-const inputClosePin = document.querySelector('.form__input--pin');
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
-
 const account1 = {
   owner: 'Jonas Schmedtmann',
   movements: [200, 455.23, -306.5, 25000, -642.21, -133.9, 79.97, 1300],
@@ -75,7 +43,48 @@ const account2 = {
   locale: 'en-US',
 };
 
-const accounts = [account1, account2];
+const account3 = {
+  owner: 'Steven Thomas Williams',
+  movements: [200, -200, 340, -300, -20, 50, 400, -460],
+  interestRate: 0.7,
+  pin: 3333,
+};
+
+const account4 = {
+  owner: 'Sarah Smith',
+  movements: [430, 1000, 700, 50, 90],
+  interestRate: 1,
+  pin: 4444,
+};
+
+const accounts = [account1, account2, account3, account4];
+
+// Elements
+const labelWelcome = document.querySelector('.welcome');
+const labelDate = document.querySelector('.date');
+const labelBalance = document.querySelector('.balance__value');
+const labelSumIn = document.querySelector('.summary__value--in');
+const labelSumOut = document.querySelector('.summary__value--out');
+const labelSumInterest = document.querySelector('.summary__value--interest');
+const labelTimer = document.querySelector('.timer');
+
+const containerApp = document.querySelector('.app');
+const containerMovements = document.querySelector('.movements');
+
+const btnLogin = document.querySelector('.login__btn');
+const btnTransfer = document.querySelector('.form__btn--transfer');
+const btnLoan = document.querySelector('.form__btn--loan');
+const btnClose = document.querySelector('.form__btn--close');
+const btnSort = document.querySelector('.btn--sort');
+
+const inputLoginUsername = document.querySelector('.login__input--user');
+const inputLoginPin = document.querySelector('.login__input--pin');
+const inputTransferTo = document.querySelector('.form__input--to');
+const inputTransferAmount = document.querySelector('.form__input--amount');
+const inputLoanAmount = document.querySelector('.form__input--loan-amount');
+const inputCloseUsername = document.querySelector('.form__input--user');
+const inputClosePin = document.querySelector('.form__input--pin');
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 //创建显示活动的函数
 const displayMovements = function (movements, sort = false) {
@@ -95,7 +104,7 @@ const displayMovements = function (movements, sort = false) {
     const html = `
     <div class="movements__row">
       <div class="movements__type     movements__type--${type}">${i} ${type}</div>
-      <div class="movements__value">${mov}￥</div>
+      <div class="movements__value">${mov.toFixed(2)}￥</div>
    </div>
     `;
     //  <div class="movements__date">${i}</div>
@@ -125,7 +134,7 @@ const converFirstNames = function (accs) {
   });
 };
 //这一步不能少，执行之后才会给里面的对象添加username属性
-// converFirstNames(accounts);
+converFirstNames(accounts);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,7 +142,7 @@ const converFirstNames = function (accs) {
 //计算剩余的钱
 const calcDisplayPrintPrice = function (account) {
   account.balance = account.movements.reduce((acc, cur) => acc + cur, 0); //不要忘记设置初始值
-  labelBalance.textContent = `${account.balance}￥`;
+  labelBalance.textContent = `${account.balance.toFixed(2)}￥`;
 };
 // calcDisplayPrintPrice(account2.movements);
 
@@ -145,12 +154,12 @@ const calcDisplaySummaryValueIn = function (account) {
   const income = account.movements
     .filter(mov => mov > 0)
     .reduce((acc, curValue) => acc + curValue, 0);
-  labelSumIn.textContent = `${income}￥`;
+  labelSumIn.textContent = `${income.toFixed(2)}￥`;
 
   const expense = account.movements
     .filter(mov => mov < 0)
     .reduce((acc, curValue) => acc + curValue);
-  labelSumOut.textContent = `${Math.abs(expense)}￥`;
+  labelSumOut.textContent = `${Math.abs(expense).toFixed(2)}￥`;
 
   const interests = account.movements
     .filter(mov => mov > 0)
@@ -218,7 +227,7 @@ btnLogin.addEventListener('click', function (e) {
   // -------------------------------------------------------------------------------------
 
   //使用可选链防止报错，判断pin是否正确.把用户名和pin情况并删除键盘焦点
-  if (currentAccount?.pin === +inputLoginPin.value) {
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
     console.log('LOGIN');
     //显示整个页面，让透明度变为100
     containerApp.style.opacity = 100;
@@ -259,7 +268,7 @@ btnLogin.addEventListener('click', function (e) {
   btnTransfer.addEventListener('click', function (e) {
     //HTML中使用了form时，必须阻止默认点击事件
     e.preventDefault();
-    const amount = +inputTransferAmount.value;
+    const amount = Number(inputTransferAmount.value);
     //找到所有的对象，遍历它们，返回属性username与用户输入值相等的那个对象
     const receiveAcount = accounts.find(function (account) {
       return account.username === inputTransferTo.value;
@@ -295,7 +304,7 @@ btnLogin.addEventListener('click', function (e) {
   btnLoan.addEventListener('click', function (e) {
     e.preventDefault();
     //.value返回的是string，要先转化为数字
-    const amount = +inputLoanAmount.value;
+    const amount = Number(inputLoanAmount.value);
     //如果借款数字大于0；大于amout的百分之10。
     //至少有一笔押金大于借款的百分之10
     if (
@@ -328,7 +337,7 @@ btnLogin.addEventListener('click', function (e) {
     //判断用户输入的close名称和当前账号相同，同时Pin也要相同
     if (
       currentAccount.username === inputCloseUsername.value &&
-      currentAccount?.pin === +inputClosePin.value
+      currentAccount?.pin === Number(inputClosePin.value)
     ) {
       const deleteAccountIndex = accounts.findIndex(
         acc => acc.username === inputCloseUsername.value
@@ -362,24 +371,34 @@ btnLogin.addEventListener('click', function (e) {
   });
 });
 
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-// LECTURES
-//二进制 0与1
+// -------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------
 
-// console.log(23 === 23.0);
+// 找到所有的movements__row，更改背景颜色
+// 将nodelist用展开语法转化为数组
+// 对数组进行forEach遍历
+// 放在lable监听事件中,labelBalance
+// forEach中的第二个函数参数是i，这个点我之前是不明确的
 
-// console.log(0.1 + 0.2);
+labelBalance.addEventListener('click', function () {
+  [...document.querySelectorAll('.movements__row')].forEach(function (row, i) {
+    //0, 2, 4等都会变成橙红色
+    if (i % 2 === 0) {
+      row.style.backgroundColor = 'orangered';
+    }
+  });
+});
 
-// 3/10 === 3.33333333无限 而0.1 + 0.2 === 0.3所以是不相等的
-// console.log(0.1 + 0.2 === 0.3);
+const nodelistRows = document.querySelectorAll('.movements__row');
+console.log(nodelistRows);
 
-//Converse
+console.log(Array.from(nodelistRows));
+console.log(Array.prototype.slice.apply(nodelistRows));
+console.log(Array.prototype.slice.call(nodelistRows));
+console.log(Array.prototype.slice(nodelistRows)); //必须要绑定并立刻执行
 
-//Parsing
-
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Math and Rounding
 
@@ -422,6 +441,9 @@ const randomMinMax = (min, max) =>
   Math.trunc(Math.random() * (max - min) + 1) + min;
 console.log(randomMinMax(11, 25));
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 //rounding integers
 //Math.ceil() 函数返回大于或等于一个给定数字的最小整数,可以理解为向上取整
 console.log(Math.ceil(1.2)); // 2
@@ -432,6 +454,10 @@ console.log(Math.ceil('1.2px')); //NaN
 console.log(Math.floor(1.9)); // 1
 console.log(Math.floor('1.9')); // 强制类型转换 1
 console.log(Math.floor('1.9px')); // NaN
+
+//floor是向下取整，也就是取得更小的值；trunc是直接舍弃掉小数点后面的内容
+console.log(Math.floor(-1.3)); // -2
+console.log(Math.trunc(-1.3)); // -1
 
 //Math.round() 返回一个四舍五入的整数
 console.log(Math.round(1.2));
@@ -445,3 +471,21 @@ console.log((1.25).toFixed(1)); // 1.3
 console.log((1.217).toFixed(2)); // 1.22
 console.log((1.213).toFixed(2)); // 1.21
 console.log(+(1.2135).toFixed(3)); // 1.214 将返回的字符串强制转换为数字
+
+//Math.abs(x) 函数返回指定数字 “x“ 的绝对值
+Math.abs('-1'); // 1
+Math.abs(-2); // 2
+Math.abs(null); // 0
+Math.abs('string'); // NaN
+Math.abs(); // NaN
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Remainder Operator
+console.log(3 % 2); // 1
+console.log(3 % 1); // 0
+console.log(-5 % 2); // -1
+console.log(-4 % 2); // -0
+console.log(-4 % -2); // -0
+console.log(6 % 3); // 0
