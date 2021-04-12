@@ -87,23 +87,38 @@ const inputClosePin = document.querySelector('.form__input--pin');
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 //创建显示活动的函数
-const displayMovements = function (movements, sort = false) {
+const displayMovements = function (acc, sort = false) {
   //在遍历之外,清空原有的内容
   containerMovements.innerHTML = '';
 
+  console.log(acc.movementsDates);
+  // const movementsTime = acc.movementsDates.forEach(time =>
+  //   time =
+  // );
+  // const day = movementsTime.getDate();
+  // const month = movementsTime.getMonth() + 1; // 以0开始，所以加上了1
+  // const year = movementsTime.getFullYear();
+  // const hours = movementsTime.getHours();
+  // const minutes = movementsTime.getMinutes();
+
+  console.log(movementsTime);
+
   //数组排序，执行升序功能;slice()保证不影响原数组
   const movs = sort
-    ? movements.slice().sort((firstEl, secondEl) => firstEl - secondEl)
-    : movements;
+    ? acc.movements.slice().sort((firstEl, secondEl) => firstEl - secondEl)
+    : acc.movements;
 
   //将数组中的遍历
   movs.forEach(function (mov, i) {
     //注意，后面的两个判断内容要为字符串
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
+    /* <div class="movements__date">${displayDates}</div> */
+
     const html = `
     <div class="movements__row">
       <div class="movements__type     movements__type--${type}">${i} ${type}</div>
+      
       <div class="movements__value">${mov.toFixed(2)}￥</div>
    </div>
     `;
@@ -168,7 +183,7 @@ const calcDisplaySummaryValueIn = function (account) {
       return (deposit * account.interestRate) / 100;
     })
     .filter((int, i, arr) => {
-      console.log(arr);
+      // console.log(arr);
       return int >= 1;
     })
     .reduce((acc, curValue) => acc + curValue, 0);
@@ -183,7 +198,7 @@ const calcDisplaySummaryValueIn = function (account) {
 //升级UI，这个部分是在最后才开始做的，方便复用
 const updateUI = function (acc) {
   calcDisplayPrintPrice(acc);
-  displayMovements(acc.movements);
+  displayMovements(acc);
   calcDisplaySummaryValueIn(acc);
 };
 
@@ -296,6 +311,8 @@ btnLogin.addEventListener('click', function (e) {
     inputTransferTo.value = inputTransferAmount.value = '';
     inputTransferAmount.blur();
   });
+  // -------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------
 
   // -------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------
@@ -394,98 +411,193 @@ console.log(nodelistRows);
 
 console.log(Array.from(nodelistRows));
 console.log(Array.prototype.slice.apply(nodelistRows));
+console.log(Array.prototype.slice.call(nodelistRows)); //不能直接使用slice方法，因为nodelist不是数组
 console.log(Array.prototype.slice.call(nodelistRows));
 console.log(Array.prototype.slice(nodelistRows)); //必须要绑定并立刻执行
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-//Math and Rounding
+//Faked log in
+let currentAccount = account1;
+updateUI(currentAccount);
+containerApp.style.opacity = 100;
 
-//Math.sqrt() 函数返回一个数的平方根
-console.log(Math.sqrt(81)); // =>9
-console.log(81 ** (1 / 2)); //81的2分之1次方，81的平方根 => 9
-console.log(8 ** (1 / 3)); // =>2
-console.log(2 ** 2); // 2的2次方 =>4
+//改变current balance下面的时间为现在的时间
+const now = new Date();
+const day = now.getDate();
+const month = now.getMonth() + 1; // 以0开始，所以加上了1
+const year = now.getFullYear();
+const hours = now.getHours();
+const minutes = now.getMinutes();
 
-//Math.max() 函数返回一组数中的最大值。
-//如果给定的参数中至少有一个参数无法被转换成数字，则会返回 NaN。
-console.log(Math.max(1, 2, 3, 4, 5)); // => 5
-console.log(Math.max(1, 2, 3, 4, '5')); //会进行数字转换 => 5
-console.log(Math.max(1, 2, 3, 4, '5px')); // => NaN
-
-//Math.min() 返回零个或更多个数值的最小值,如果任一参数不能转换为数值
-console.log(Math.min(1, 2, 3, 4, 5)); // 1
-console.log(Math.min('1', 2, 3, 4, 5)); // 1
-console.log(Math.min('1px', 2, 3, 4, 5)); // NaN
-
-//parseFloat/parseInt  vs   Math.min/Math.max
-console.log(Math.min('1px', 2, 3, 4, 5)); // NaN
-console.log(parseInt('1px')); // 1
-
-console.log(Math.max(1, 2, 3, 4, '5px')); // NaN
-console.log(parseInt('5px')); // 5
-
-//Math.PI 表示一个圆的周长与直径的比例，约为3.1415
-console.log(Math.PI * Number.parseFloat('10px') ** 2); //得到面积，pi*半径的平方
-
-//先得出一个在1到6之间的整数
-const randomOneToSix = Math.trunc(Math.random() * 6) + 1;
-console.log(randomOneToSix);
-
-//制作一个函数，得到min/max之间的随机整数
-//Math.trunc(Math.random() * (max - min) + 1)    在0到(max-min)之间
-//然后在后面再加上min,范围大小就变成min...(max - min) + min   范围也就是min...max
-//0...(max-min)   => 0+min ....(max-min)+min    => min...Max
-const randomMinMax = (min, max) =>
-  Math.trunc(Math.random() * (max - min) + 1) + min;
-console.log(randomMinMax(11, 25));
+labelDate.textContent = `${year}/${month}/${day} ${hours}:${minutes}`;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-//rounding integers
-//Math.ceil() 函数返回大于或等于一个给定数字的最小整数,可以理解为向上取整
-console.log(Math.ceil(1.2)); // 2
-console.log(Math.ceil('1.2')); //强制类型转行 => 2
-console.log(Math.ceil('1.2px')); //NaN
+// //Math and Rounding
 
-//Math.floor() 返回小于或等于一个给定数字的最大整数,可以理解为向下取整
-console.log(Math.floor(1.9)); // 1
-console.log(Math.floor('1.9')); // 强制类型转换 1
-console.log(Math.floor('1.9px')); // NaN
+// //Math.sqrt() 函数返回一个数的平方根
+// console.log(Math.sqrt(81)); // =>9
+// console.log(81 ** (1 / 2)); //81的2分之1次方，81的平方根 => 9
+// console.log(8 ** (1 / 3)); // =>2
+// console.log(2 ** 2); // 2的2次方 =>4
 
-//floor是向下取整，也就是取得更小的值；trunc是直接舍弃掉小数点后面的内容
-console.log(Math.floor(-1.3)); // -2
-console.log(Math.trunc(-1.3)); // -1
+// //Math.max() 函数返回一组数中的最大值。
+// //如果给定的参数中至少有一个参数无法被转换成数字，则会返回 NaN。
+// console.log(Math.max(1, 2, 3, 4, 5)); // => 5
+// console.log(Math.max(1, 2, 3, 4, '5')); //会进行数字转换 => 5
+// console.log(Math.max(1, 2, 3, 4, '5px')); // => NaN
 
-//Math.round() 返回一个四舍五入的整数
-console.log(Math.round(1.2));
+// //Math.min() 返回零个或更多个数值的最小值,如果任一参数不能转换为数值
+// console.log(Math.min(1, 2, 3, 4, 5)); // 1
+// console.log(Math.min('1', 2, 3, 4, 5)); // 1
+// console.log(Math.min('1px', 2, 3, 4, 5)); // NaN
 
-//rounding decimals
+// //parseFloat/parseInt  vs   Math.min/Math.max
+// console.log(Math.min('1px', 2, 3, 4, 5)); // NaN
+// console.log(parseInt('1px')); // 1
 
-//指定位数的四舍五入，toFixed() 方法使用定点表示法来格式化一个数值
-console.log((1.2).toFixed(0)); //四舍五入求0位 得到1
-// console.log('1.2'.toFixed(0)); //无法转换类型
-console.log((1.25).toFixed(1)); // 1.3
-console.log((1.217).toFixed(2)); // 1.22
-console.log((1.213).toFixed(2)); // 1.21
-console.log(+(1.2135).toFixed(3)); // 1.214 将返回的字符串强制转换为数字
+// console.log(Math.max(1, 2, 3, 4, '5px')); // NaN
+// console.log(parseInt('5px')); // 5
 
-//Math.abs(x) 函数返回指定数字 “x“ 的绝对值
-Math.abs('-1'); // 1
-Math.abs(-2); // 2
-Math.abs(null); // 0
-Math.abs('string'); // NaN
-Math.abs(); // NaN
+// //Math.PI 表示一个圆的周长与直径的比例，约为3.1415
+// console.log(Math.PI * Number.parseFloat('10px') ** 2); //得到面积，pi*半径的平方
+
+// //先得出一个在1到6之间的整数
+// const randomOneToSix = Math.trunc(Math.random() * 6) + 1;
+// console.log(randomOneToSix);
+
+// //制作一个函数，得到min/max之间的随机整数
+// //Math.trunc(Math.random() * (max - min) + 1)    在0到(max-min)之间
+// //然后在后面再加上min,范围大小就变成min...(max - min) + min   范围也就是min...max
+// //0...(max-min)   => 0+min ....(max-min)+min    => min...Max
+// const randomMinMax = (min, max) =>
+//   Math.trunc(Math.random() * (max - min) + 1) + min;
+// console.log(randomMinMax(11, 25));
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-//Remainder Operator
-console.log(3 % 2); // 1
-console.log(3 % 1); // 0
-console.log(-5 % 2); // -1
-console.log(-4 % 2); // -0
-console.log(-4 % -2); // -0
-console.log(6 % 3); // 0
+// //rounding integers
+// //Math.ceil() 函数返回大于或等于一个给定数字的最小整数,可以理解为向上取整
+// console.log(Math.ceil(1.2)); // 2
+// console.log(Math.ceil('1.2')); //强制类型转行 => 2
+// console.log(Math.ceil('1.2px')); //NaN
+
+// //Math.floor() 返回小于或等于一个给定数字的最大整数,可以理解为向下取整
+// console.log(Math.floor(1.9)); // 1
+// console.log(Math.floor('1.9')); // 强制类型转换 1
+// console.log(Math.floor('1.9px')); // NaN
+
+// //floor是向下取整，也就是取得更小的值；trunc是直接舍弃掉小数点后面的内容
+// console.log(Math.floor(-1.3)); // -2
+// console.log(Math.trunc(-1.3)); // -1
+
+// //Math.round() 返回一个四舍五入的整数
+// console.log(Math.round(1.2));
+
+// //rounding decimals
+
+// //指定位数的四舍五入，toFixed() 方法使用定点表示法来格式化一个数值
+// console.log((1.2).toFixed(0)); //四舍五入求0位 得到1
+// // console.log('1.2'.toFixed(0)); //无法转换类型
+// console.log((1.25).toFixed(1)); // 1.3
+// console.log((1.217).toFixed(2)); // 1.22
+// console.log((1.213).toFixed(2)); // 1.21
+// console.log(+(1.2135).toFixed(3)); // 1.214 将返回的字符串强制转换为数字
+
+// //Math.abs(x) 函数返回指定数字 “x“ 的绝对值
+// Math.abs('-1'); // 1
+// Math.abs(-2); // 2
+// Math.abs(null); // 0
+// Math.abs('string'); // NaN
+// Math.abs(); // NaN
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+// //Remainder Operator
+// console.log(3 % 2); // 1
+// console.log(3 % 1); // 0
+// console.log(-5 % 2); // -1
+// console.log(-4 % 2); // -0
+// console.log(-4 % -2); // -0
+// console.log(6 % 3); // 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+// //BigInt
+
+// console.log(Number.MAX_SAFE_INTEGER);
+// console.log(2 ** 53 - 1); //Js能够表达的精确数字的最大值
+// console.log(2 ** 53 + 5);
+// console.log(2 ** 53 + 6);
+// console.log(2 ** 53 - 1);
+
+// console.log(654654654654654654654645654654282); //数字太大，有省略，且不精确
+// console.log(654654654654654654654645654654282n); //BigInt
+// console.log(BigInt(654654654654654654654645654654282)); //这种方式不适合太大的数字，有误差
+
+// // console.log(98756545464 + 654645642131564n); //BigInt只能与BigInt计算
+
+// //Exception
+// console.log(20n > 10); // true
+// console.log(20n == '20'); // true => transform to number
+// console.log(20n === 20); // false
+// console.log(typeof 20n); // BigInt
+
+// const huge = 564546545646465481216548465132153487131212n;
+// console.log(huge + 'is a really big number'); // transform to string
+
+// //divisions
+// console.log(10n / 3n); // 3n => delete the decimal part
+// console.log(10 / 3); // 3.33333333...
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Create a date
+/*
+console.log(new Date('Sat Apr 10 2021 09:27:56 GMT+0800'));
+
+//如果是字符串中，11月就代表11月
+console.log(new Date('Sat 11 10 2021 09:27:56 GMT+0800'));
+console.log(new Date('december 24, 2015'));
+console.log(new Date(account1.movementsDates[0]));
+
+//如果数字作为参数，那么月份那里是以0位开始。所以下面是2077年12月份
+console.log(new Date(2077, 11, 1, 13, 2, 56));
+console.log(new Date());
+*/
+
+//即自1970年1月1日（UTC）起经过的毫秒数
+// console.log(new Date(0));
+
+//Working with Dates
+
+// //月份实际数+1，由2077年增加一年，就变成2078年了
+// const future = new Date(2021, 3, 12, 13, 2, 56);
+// console.log(future.getFullYear()); // 2021
+// console.log(future.getMonth()); // 3
+
+// //getDay() 方法根据本地时间，返回一个具体日期中一周的第几天，0 表示星期天。
+// console.log(future.getDay());
+
+// //根据本地时间，返回一个指定的日期对象为一个月中的哪一日（从1--31）
+// console.log(future.getDate());
+
+// console.log(future.getHours());
+// console.log(future.getMinutes());
+// console.log(future.getSeconds());
+// console.log(future.getTime());
+
+// console.log(future.toISOString());
+
+// //通过1970年1月1日起的毫秒数得到时间
+// console.log(new Date(1618203776000));
+
+// future.setFullYear(2077);
+// console.log(future);
