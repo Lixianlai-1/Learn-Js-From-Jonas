@@ -86,6 +86,14 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
+//用来显示货币数值，并实现自动出现2位的小数点
+const formatCalc = function (locale, currency, value) {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+  }).format(value);
+};
+
 const formateMovementsDate = function (movDates, locale) {
   //用Math.round()四舍五入
   const calcNumber = (date1, date2) =>
@@ -144,12 +152,13 @@ const displayMovements = function (acc, sort = false) {
     //得到数组中的单一日期，forEach中的i联合起来运用
     const movDates = new Date(acc.movementsDates[i]);
     const displayDates = formateMovementsDate(movDates, acc.locale);
+    const formateNumberAndCurrency = formatCalc(acc.locale, acc.currency, mov);
 
     const html = `
     <div class="movements__row">
       <div class="movements__type     movements__type--${type}">${i} ${type}</div>
       <div class="movements__date">${displayDates}</div> 
-      <div class="movements__value">${mov.toFixed(2)}￥</div>
+      <div class="movements__value">${formateNumberAndCurrency}</div>
    </div>
     `;
     //  <div class="movements__date">${i}</div>
@@ -187,7 +196,18 @@ converFirstNames(accounts);
 //计算剩余的钱
 const calcDisplayPrintPrice = function (account) {
   account.balance = account.movements.reduce((acc, cur) => acc + cur, 0); //不要忘记设置初始值
-  labelBalance.textContent = `${account.balance.toFixed(2)}￥`;
+
+  labelBalance.textContent = formatCalc(
+    account.locale,
+    account.currency,
+    account.balance
+  );
+
+  // labelBalance.textContent = new Intl.NumberFormat(account.locale, {
+  //   style: 'currency',
+  //   currency: `${account.currency}`,
+  // }).format(account.balance);
+  // labelBalance.textContent = `${account.balance.toFixed(2)}￥`;
 };
 // calcDisplayPrintPrice(account2.movements);
 
@@ -199,12 +219,32 @@ const calcDisplaySummaryValueIn = function (account) {
   const income = account.movements
     .filter(mov => mov > 0)
     .reduce((acc, curValue) => acc + curValue, 0);
-  labelSumIn.textContent = `${income.toFixed(2)}￥`;
+
+  labelSumIn.textContent = formatCalc(account.locale, account.currency, income);
+
+  // labelSumIn.textContent = new Intl.NumberFormat(account.locale, {
+  //   style: 'currency',
+  //   currency: `${account.currency}`,
+  // }).format(income);
+
+  // labelSumIn.textContent = `${income.toFixed(2)}￥`;
 
   const expense = account.movements
     .filter(mov => mov < 0)
     .reduce((acc, curValue) => acc + curValue);
-  labelSumOut.textContent = `${Math.abs(expense).toFixed(2)}￥`;
+
+  labelSumOut.textContent = formatCalc(
+    account.locale,
+    account.currency,
+    expense
+  );
+
+  // labelSumOut.textContent = new Intl.NumberFormat(account.locale, {
+  //   style: 'currency',
+  //   currency: `${account.currency}`,
+  // }).format(expense);
+
+  // labelSumOut.textContent = `${Math.abs(expense).toFixed(2)}￥`;
 
   const interests = account.movements
     .filter(mov => mov > 0)
@@ -218,7 +258,19 @@ const calcDisplaySummaryValueIn = function (account) {
     })
     .reduce((acc, curValue) => acc + curValue, 0);
   // const interests = income + expense;
-  labelSumInterest.textContent = `${interests.toFixed(2)}￥`;
+
+  labelSumInterest.textContent = formatCalc(
+    account.locale,
+    account.currency,
+    interests
+  );
+
+  // labelSumInterest.textContent = new Intl.NumberFormat(account.locale, {
+  //   style: 'currency',
+  //   currency: `${account.currency}`,
+  // }).format(interests);
+
+  // labelSumInterest.textContent = `${interests.toFixed(2)}￥`;
 };
 // calcDisplaySummaryValueIn(account1.movements);
 
@@ -357,22 +409,26 @@ btnLogin.addEventListener('click', function (e) {
       //当前用户的movement数组增加一个-amount值，到数组的最后
       //要得到当前数组，那么就需要用到前面的currentAcount，也就是必须把这个监听事件放在前一个监听事件当中
       // currentAccount.movements.push(Number(`-${amount}`));
-      currentAccount.movements.push(-amount); //当前账户减少钱
-      //让receivAcount的金额数组增加一个正数
-      receiveAcount.movements.push(amount); //接受账户增加钱
+      setTimeout(function () {
+        currentAccount.movements.push(-amount); //当前账户减少钱
+        //让receivAcount的金额数组增加一个正数
+        receiveAcount.movements.push(amount); //接受账户增加钱
 
-      //增加Date部分
-      currentAccount.movementsDates.push(new Date().toISOString());
-      receiveAcount.movementsDates.push(new Date().toISOString());
+        //增加Date部分
+        currentAccount.movementsDates.push(new Date().toISOString());
+        receiveAcount.movementsDates.push(new Date().toISOString());
 
-      //更新所有地方的UI
-      updateUI(currentAccount);
-      // calcDisplayPrintPrice(currentAccount);
-      // displayMovements(currentAccount);
-      // calcDisplaySummaryValueIn(currentAccount);
+        //更新所有地方的UI
+        updateUI(currentAccount);
+
+        // calcDisplayPrintPrice(currentAccount);
+        // displayMovements(currentAccount);
+        // calcDisplaySummaryValueIn(currentAccount);}
+
+        inputTransferTo.value = inputTransferAmount.value = '';
+        inputTransferAmount.blur();
+      }, 2000);
     }
-    inputTransferTo.value = inputTransferAmount.value = '';
-    inputTransferAmount.blur();
   });
   // -------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------
@@ -397,18 +453,20 @@ btnLogin.addEventListener('click', function (e) {
         return deposit >= amount * 0.1;
       })
     ) {
-      //往活动数组中添加借款
-      currentAccount.movements.push(amount);
+      setTimeout(function () {
+        //往活动数组中添加借款
+        currentAccount.movements.push(amount);
 
-      //以当前账户升级UI，再次说明UI集成的重要性
-      updateUI(currentAccount);
+        //以当前账户升级UI，再次说明UI集成的重要性
+        updateUI(currentAccount);
 
-      //让输入位置重新变成空
-      inputLoanAmount.value = '';
+        //让输入位置重新变成空
+        inputLoanAmount.value = '';
 
-      //消除焦点
-      inputLoanAmount.blur();
-      console.log(currentAccount.movements);
+        //消除焦点
+        inputLoanAmount.blur();
+        console.log(currentAccount.movements);
+      }, 2000);
     }
   });
 
@@ -705,18 +763,63 @@ console.log(new Date());
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-//formating numbers
-const nums = 135432115.25;
-const optinosForNums = {
-  style: 'currency',
-  currency: 'CNY', //欧洲就是EUR，美国是USD,中国是CNY
-  currencyDisplay: 'name',
-  useGrouping: false,
-};
+// //formating numbers
+// const nums = 135432115;
+// const optinosForNums = {
+//   style: 'currency',
+//   currency: 'CNY', //欧洲就是EUR，美国是USD,中国是CNY
+//   currencyDisplay: 'name',
+//   useGrouping: false,
+// };
 
-console.log(new Intl.NumberFormat('en-US', optinosForNums).format(nums));
-console.log(new Intl.NumberFormat('tr', optinosForNums).format(nums));
-console.log(new Intl.NumberFormat('ar-SY', optinosForNums).format(nums));
-console.log(
-  new Intl.NumberFormat(navigator.language, optinosForNums).format(nums)
+// console.log(new Intl.NumberFormat('en-US', optinosForNums).format(nums));
+// console.log(new Intl.NumberFormat('tr', optinosForNums).format(nums));
+// console.log(new Intl.NumberFormat('ar-SY', optinosForNums).format(nums));
+// console.log(
+//   new Intl.NumberFormat(navigator.language, optinosForNums).format(nums)
+// );
+
+// var number = 3500;
+
+// console.log(
+//   new Intl.NumberFormat('en-US', {
+//     style: 'currency',
+//     currency: 'USD',
+//   }).format(number)
+// );
+
+// console.log(new Intl.NumberFormat('en-US').format(number));
+
+// console.log(new Intl.NumberFormat().format(number));
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+//setTimeout and setInterval
+
+//setTimeout
+const ingredients = ['spinach', 'olives'];
+
+const pizzaTimer = setTimeout(
+  (ar1, ar2) => {
+    console.log(
+      `wait 3 seconds,and there are some arguments:${ar1}🥱,${ar2}🤐`
+    );
+  },
+  3000,
+  ...ingredients
 );
+
+if (ingredients.includes('spinach')) {
+  clearTimeout(pizzaTimer);
+}
+
+//setInterval
+
+const minute = 1000 * 60;
+const hour = minute * 60;
+const day = hour * 24;
+setInterval(() => {
+  const now = new Date();
+  console.log(now);
+}, minute);
