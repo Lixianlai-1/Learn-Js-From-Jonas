@@ -86,39 +86,69 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
+const formateMovementsDate = function (movDates, locale) {
+  //用Math.round()四舍五入
+  const calcNumber = (date1, date2) =>
+    Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
+
+  //计算事件发生的时间与现在的时间差，多少天之前
+  const dayPassed = calcNumber(new Date(), movDates);
+
+  if (dayPassed === 0) return 'today';
+  if (dayPassed === 1) return 'yesterday';
+  if (dayPassed <= 7) {
+    return `${dayPassed} days ago`;
+  } else {
+    // const year = movDates.getFullYear();
+    // const month = movDates.getMonth() + 1; //注意月份要加上1
+    // const day = `${movDates.getDate()}`.padStart(2, 0);
+    // // const day = movDates.getDate();
+    // return `${year}/${month}/${day}`;
+
+    //这里不需要小时和分钟，就不需要用options
+    // const options = {
+    //   minute: 'numeric',
+    //   hour: 'numeric',
+    //   day: 'numeric',
+    //   weekday: 'short', //仅支持short/long/narrow
+    //   month: 'numeric',
+    //   year: 'numeric',
+    // };
+    // const locale = navigator.language; //zh-CN，这是代表当前浏览器的语言
+
+    //https://seiryu.cn/353/是iso code
+    //记得这里需要return
+
+    //这里不需要小时和分钟，就不需要用options
+    return new Intl.DateTimeFormat(locale).format(movDates);
+  }
+};
+
 //创建显示活动的函数
 const displayMovements = function (acc, sort = false) {
   //在遍历之外,清空原有的内容
   containerMovements.innerHTML = '';
 
   console.log(acc.movementsDates);
-  // const movementsTime = acc.movementsDates.forEach(time =>
-  //   time =
-  // );
-  // const day = movementsTime.getDate();
-  // const month = movementsTime.getMonth() + 1; // 以0开始，所以加上了1
-  // const year = movementsTime.getFullYear();
-  // const hours = movementsTime.getHours();
-  // const minutes = movementsTime.getMinutes();
-
-  // console.log(movementsTime);
 
   //数组排序，执行升序功能;slice()保证不影响原数组
   const movs = sort
     ? acc.movements.slice().sort((firstEl, secondEl) => firstEl - secondEl)
     : acc.movements;
 
-  //将数组中的遍历
+  //将数组中的遍历，forEach遍历数组的第二个参数是索引值
   movs.forEach(function (mov, i) {
     //注意，后面的两个判断内容要为字符串
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
-    /* <div class="movements__date">${displayDates}</div> */
+    //得到数组中的单一日期，forEach中的i联合起来运用
+    const movDates = new Date(acc.movementsDates[i]);
+    const displayDates = formateMovementsDate(movDates, acc.locale);
 
     const html = `
     <div class="movements__row">
       <div class="movements__type     movements__type--${type}">${i} ${type}</div>
-      
+      <div class="movements__date">${displayDates}</div> 
       <div class="movements__value">${mov.toFixed(2)}￥</div>
    </div>
     `;
@@ -241,13 +271,38 @@ btnLogin.addEventListener('click', function (e) {
   // -------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------
 
+  // //Creat current Date
+  // const now = new Date();
+  // const day = `${now.getDate()}`.padStart(2, '0');
+  // const month = now.getMonth() + 1; // 以0开始，所以加上了1
+  // const year = now.getFullYear();
+  // const hours = `${now.getHours()}`.padStart(2, '0');
+  // const minutes = `${now.getMinutes()}`.padStart(2, '0');
+  // labelDate.textContent = `${year}/${month}/${day} ${hours}:${minutes}`;
+
+  const now = new Date();
+  const options = {
+    minute: 'numeric',
+    hour: 'numeric',
+    day: 'numeric',
+    weekday: 'short',
+    month: 'numeric',
+    year: 'numeric',
+  };
+  // const locale = navigator.language; //zh-CN，这是代表当前浏览器的语言
+  const locale = currentAccount.locale; //currentAccount中有locale属性，直接读取
+  console.log(locale);
+
+  //https://seiryu.cn/353/是iso code
+  labelDate.textContent = new Intl.DateTimeFormat(locale, options).format(now);
+
   //使用可选链防止报错，判断pin是否正确.把用户名和pin情况并删除键盘焦点
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     console.log('LOGIN');
     //显示整个页面，让透明度变为100
     containerApp.style.opacity = 100;
 
-    //让用户名和pin的位置变成空，并消除使用状态
+    //让用户名和pin的位置变成空，并消除使用状态s
     // inputLoginUsername.value = '';
     // inputLoginPin.value = '';
     inputLoginUsername.value = inputLoginPin.value = '';
@@ -283,11 +338,15 @@ btnLogin.addEventListener('click', function (e) {
   btnTransfer.addEventListener('click', function (e) {
     //HTML中使用了form时，必须阻止默认点击事件
     e.preventDefault();
+
     const amount = Number(inputTransferAmount.value);
+
     //找到所有的对象，遍历它们，返回属性username与用户输入值相等的那个对象
+    //也就是接受转账的那个对象
     const receiveAcount = accounts.find(function (account) {
       return account.username === inputTransferTo.value;
     });
+    console.log(receiveAcount);
 
     //因为上方已经执行了一次Display balance，所以balance属性已经存在了
     if (
@@ -298,14 +357,18 @@ btnLogin.addEventListener('click', function (e) {
       //当前用户的movement数组增加一个-amount值，到数组的最后
       //要得到当前数组，那么就需要用到前面的currentAcount，也就是必须把这个监听事件放在前一个监听事件当中
       // currentAccount.movements.push(Number(`-${amount}`));
-      currentAccount.movements.push(-amount);
+      currentAccount.movements.push(-amount); //当前账户减少钱
       //让receivAcount的金额数组增加一个正数
-      receiveAcount.movements.push(amount);
+      receiveAcount.movements.push(amount); //接受账户增加钱
+
+      //增加Date部分
+      currentAccount.movementsDates.push(new Date().toISOString());
+      receiveAcount.movementsDates.push(new Date().toISOString());
 
       //更新所有地方的UI
       updateUI(currentAccount);
       // calcDisplayPrintPrice(currentAccount);
-      // displayMovements(currentAccount.movements);
+      // displayMovements(currentAccount);
       // calcDisplaySummaryValueIn(currentAccount);
     }
     inputTransferTo.value = inputTransferAmount.value = '';
@@ -324,6 +387,10 @@ btnLogin.addEventListener('click', function (e) {
     const amount = Number(inputLoanAmount.value);
     //如果借款数字大于0；大于amout的百分之10。
     //至少有一笔押金大于借款的百分之10
+
+    //增加Date部分
+    currentAccount.movementsDates.push(new Date().toISOString());
+
     if (
       amount > 0 &&
       currentAccount.movements.some(function (deposit) {
@@ -376,7 +443,7 @@ btnLogin.addEventListener('click', function (e) {
   let sorted = false;
   btnSort.addEventListener('click', function (e) {
     e.preventDefault();
-    displayMovements(currentAccount.movements, !sorted);
+    displayMovements(currentAccount, !sorted);
     sorted = !sorted; //sorted原来是false，!sorted变成true，让sorted变成true；再一次点击时，!sorted就变成false
 
     //Array.from先将nodelist转化为数组，然后才能用数组的方法，比如下面的replace
@@ -423,15 +490,32 @@ let currentAccount = account1;
 updateUI(currentAccount);
 containerApp.style.opacity = 100;
 
-//改变current balance下面的时间为现在的时间
+//实验
 const now = new Date();
-const day = now.getDate();
-const month = now.getMonth() + 1; // 以0开始，所以加上了1
-const year = now.getFullYear();
-const hours = now.getHours();
-const minutes = now.getMinutes();
 
-labelDate.textContent = `${year}/${month}/${day} ${hours}:${minutes}`;
+const options = {
+  minute: 'numeric',
+  hour: 'numeric',
+  day: 'numeric',
+  weekday: 'short',
+  month: 'numeric',
+  year: 'numeric',
+};
+
+const locale = currentAccount.locale; //zh-CN
+console.log(locale);
+
+//https://seiryu.cn/353/是iso code
+labelDate.textContent = new Intl.DateTimeFormat(locale, options).format(now);
+//改变current balance下面的时间为现在的时间
+// const now = new Date();
+// const day = now.getDate();
+// const month = now.getMonth() + 1; // 以0开始，所以加上了1
+// const year = now.getFullYear();
+// const hours = now.getHours();
+// const minutes = now.getMinutes();
+
+// labelDate.textContent = `${year}/${month}/${day} ${hours}:${minutes}`;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -601,3 +685,38 @@ console.log(new Date());
 
 // future.setFullYear(2077);
 // console.log(future);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+// //Operations With Dates
+// const future = new Date(2021, 3, 12);
+// // console.log(Number(future));
+// // console.log(+future);
+
+// //Creat a function to calculate diff
+// const calcNumber = (date1, date2) =>
+//   Math.abs(date2 - date1) / (1000 * 60 * 60 * 24);
+
+// const days = calcNumber(new Date(2021, 3, 12), new Date(2021, 3, 2));
+
+// console.log(days);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+//formating numbers
+const nums = 135432115.25;
+const optinosForNums = {
+  style: 'currency',
+  currency: 'CNY', //欧洲就是EUR，美国是USD,中国是CNY
+  currencyDisplay: 'name',
+  useGrouping: false,
+};
+
+console.log(new Intl.NumberFormat('en-US', optinosForNums).format(nums));
+console.log(new Intl.NumberFormat('tr', optinosForNums).format(nums));
+console.log(new Intl.NumberFormat('ar-SY', optinosForNums).format(nums));
+console.log(
+  new Intl.NumberFormat(navigator.language, optinosForNums).format(nums)
+);
