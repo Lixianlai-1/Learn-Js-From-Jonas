@@ -307,6 +307,10 @@ const maxNumber = account2.movements.reduce(function (acc, cur, i) {
 btnLogin.addEventListener('click', function (e) {
   //在表单提交button,会导致页面重新加载，因为要使用e.preventDefault();阻止加载
   e.preventDefault();
+
+  //调用计时器功能
+  countRemaingTimer();
+
   //找到input输入的值就用
   // const inputLoginUsername = document.querySelector('.login__input--user');
   const currentAccount = accounts.find(function (account) {
@@ -539,6 +543,35 @@ console.log(Array.prototype.slice.apply(nodelistRows));
 console.log(Array.prototype.slice.call(nodelistRows)); //不能直接使用slice方法，因为nodelist不是数组
 console.log(Array.prototype.slice.call(nodelistRows));
 console.log(Array.prototype.slice(nodelistRows)); //必须要绑定并立刻执行
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+//设置一个倒计时函数
+const countRemaingTimer = function () {
+  //设置时间为5分钟
+  let time = 10;
+
+  setInterval(() => {
+    //每一次调用，都打印剩余的时间到UI上
+    if (time > 0) {
+      labelTimer.textContent = time;
+
+      //每次减少1s
+      time--;
+
+      //当时间为0s时，退出登录状态，停止计时器并继续执行
+    } else {
+      //这里时间为0时，怎么跟登录的部分联动起来呢
+      //- 在log in部分调用这个函数
+      //难道仅仅是把透明度变成0吗？不止吧应该
+      //未知量是什么？
+      //已知量是什么？
+      //目前的条件是什么？
+      containerApp.style.opacity = 0;
+    }
+  }, 1000);
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -795,31 +828,34 @@ console.log(new Date());
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-//setTimeout and setInterval
+// //setTimeout and setInterval
 
-//setTimeout
-const ingredients = ['spinach', 'olives'];
+// //setTimeout
+// const ingredients = ['spinach', 'olives'];
 
-const pizzaTimer = setTimeout(
-  (ar1, ar2) => {
-    console.log(
-      `wait 3 seconds,and there are some arguments:${ar1}🥱,${ar2}🤐`
-    );
-  },
-  3000,
-  ...ingredients
-);
+// const pizzaTimer = setTimeout(
+//   (ar1, ar2) => {
+//     console.log(
+//       `wait 3 seconds,and there are some arguments:${ar1}🥱,${ar2}🤐`
+//     );
+//   },
+//   3000,
+//   ...ingredients
+// );
 
-if (ingredients.includes('spinach')) {
-  clearTimeout(pizzaTimer);
-}
+// if (ingredients.includes('spinach')) {
+//   clearTimeout(pizzaTimer);
+// }
 
-//setInterval
+// //setInterval
 
-const minute = 1000 * 60;
-const hour = minute * 60;
-const day = hour * 24;
-setInterval(() => {
-  const now = new Date();
-  console.log(now);
-}, minute);
+// const minute = 1000 * 60;
+// const hour = minute * 60;
+// const day = hour * 24;
+// setInterval(() => {
+//   const now = new Date();
+//   console.log(now);
+// }, minute);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
