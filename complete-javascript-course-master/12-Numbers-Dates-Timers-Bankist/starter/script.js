@@ -303,13 +303,49 @@ const maxNumber = account2.movements.reduce(function (acc, cur, i) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+const countRemaingTimer = function () {
+  let time = 30;
+
+  const tick = function () {
+    let min = String(Math.trunc(time / 60)).padStart(2, 0);
+    //取余得到分钟剩余的秒数
+    let sec = String(time % 60).padStart(2, 0);
+    labelTimer.textContent = `${min}:${sec}`;
+
+    if (time === 0) {
+      //恢复原来的欢迎语
+      labelWelcome.textContent = `Log in to get started`;
+
+      //删除之前的计时器
+      clearInterval(timer);
+
+      //隐身
+      containerApp.style.opacity = 0;
+    }
+
+    //每次减少1s
+    time--;
+  };
+
+  //先立刻执行一次
+  tick();
+
+  const timer = setInterval(tick, 1000);
+
+  return timer;
+};
+
+let timer;
 //实现登录功能
 btnLogin.addEventListener('click', function (e) {
   //在表单提交button,会导致页面重新加载，因为要使用e.preventDefault();阻止加载
   e.preventDefault();
 
+  clearInterval();
+
   //调用计时器功能
-  countRemaingTimer();
+  if (timer) clearInterval(timer);
+  timer = countRemaingTimer();
 
   //找到input输入的值就用
   // const inputLoginUsername = document.querySelector('.login__input--user');
@@ -392,6 +428,10 @@ btnLogin.addEventListener('click', function (e) {
 
   //实现转账功能与UI升级
   btnTransfer.addEventListener('click', function (e) {
+    //重新设置timer
+    clearInterval(timer);
+    timer = countRemaingTimer();
+
     //HTML中使用了form时，必须阻止默认点击事件
     e.preventDefault();
 
@@ -442,6 +482,10 @@ btnLogin.addEventListener('click', function (e) {
 
   //The loan part
   btnLoan.addEventListener('click', function (e) {
+    //重新设置timer
+    clearInterval(timer);
+    timer = countRemaingTimer();
+
     e.preventDefault();
     //.value返回的是string，要先转化为数字
     const amount = Number(inputLoanAmount.value);
@@ -547,57 +591,57 @@ console.log(Array.prototype.slice(nodelistRows)); //必须要绑定并立刻执�
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-//设置一个倒计时函数
-const countRemaingTimer = function () {
-  //设置时间为5分钟
-  let time = 10;
+// //设置一个倒计时函数
+// const countRemaingTimer = function () {
+//   //设置时间为5分钟
+//   let time = 10;
 
-  setInterval(() => {
-    //每一次调用，都打印剩余的时间到UI上
-    if (time > 0) {
-      labelTimer.textContent = time;
+//   setInterval(() => {
+//     //每一次调用，都打印剩余的时间到UI上
+//     if (time > 0) {
+//       labelTimer.textContent = time;
 
-      //每次减少1s
-      time--;
+//       //每次减少1s
+//       time--;
 
-      //当时间为0s时，退出登录状态，停止计时器并继续执行
-    } else {
-      //这里时间为0时，怎么跟登录的部分联动起来呢
-      //- 在log in部分调用这个函数
-      //难道仅仅是把透明度变成0吗？不止吧应该
-      //未知量是什么？
-      //已知量是什么？
-      //目前的条件是什么？
-      containerApp.style.opacity = 0;
-    }
-  }, 1000);
-};
+//       //当时间为0s时，退出登录状态，停止计时器并继续执行
+//     } else {
+//       //这里时间为0时，怎么跟登录的部分联动起来呢
+//       //- 在log in部分调用这个函数
+//       //难道仅仅是把透明度变成0吗？不止吧应该
+//       //未知量是什么？
+//       //已知量是什么？
+//       //目前的条件是什么？
+//       containerApp.style.opacity = 0;
+//     }
+//   }, 1000);
+// };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-//Faked log in
-let currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 100;
+// //Faked log in
+// let currentAccount = account1;
+// updateUI(currentAccount);
+// containerApp.style.opacity = 100;
 
-//实验
-const now = new Date();
+// //实验
+// const now = new Date();
 
-const options = {
-  minute: 'numeric',
-  hour: 'numeric',
-  day: 'numeric',
-  weekday: 'short',
-  month: 'numeric',
-  year: 'numeric',
-};
+// const options = {
+//   minute: 'numeric',
+//   hour: 'numeric',
+//   day: 'numeric',
+//   weekday: 'short',
+//   month: 'numeric',
+//   year: 'numeric',
+// };
 
-const locale = currentAccount.locale; //zh-CN
-console.log(locale);
+// const locale = currentAccount.locale; //zh-CN
+// console.log(locale);
 
-//https://seiryu.cn/353/是iso code
-labelDate.textContent = new Intl.DateTimeFormat(locale, options).format(now);
+// //https://seiryu.cn/353/是iso code
+// labelDate.textContent = new Intl.DateTimeFormat(locale, options).format(now);
 //改变current balance下面的时间为现在的时间
 // const now = new Date();
 // const day = now.getDate();
