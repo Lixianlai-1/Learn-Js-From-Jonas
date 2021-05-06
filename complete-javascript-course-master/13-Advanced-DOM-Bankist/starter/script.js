@@ -32,6 +32,57 @@ document.addEventListener('keydown', function (e) {
 });
 
 ///////////////////////////////////////////////////////////////////////////
+
+// Page Navigation
+//下面的方法，会影响性能，尤其是元素过多的时候。
+// document.querySelectorAll('.nav__link').forEach(el => {
+//   el.addEventListener('click', function (event) {
+//     //先阻止默认的跳转事件
+//     event.preventDefault();
+
+//     console.log(this);
+//     const id = this.getAttribute('href');
+//     console.log(id);
+
+//     //element.scrollIntoView()
+//     document.querySelector(id).scrollIntoView({ behavior: 'smooth' }); //平滑滚动
+//   });
+// });
+
+//运用冒泡方法
+//1.添加事件监听器到父元素上
+//2.定义哪个元素是事件的坐标
+document
+  .querySelector('.nav__links')
+  .addEventListener('click', function (event) {
+    event.preventDefault();
+
+    //得到当前触发元素的href,比如Features的href就是#section-1，可以通过它找到相应位置
+
+    if (event.target.classList.contains('nav__link')) {
+      const id = event.target.getAttribute('href');
+      console.log(id);
+      document.querySelector(id).scrollIntoView({ behavior: 'smooth' });
+    } else {
+      console.log('请在a链接上点击');
+    }
+  });
+
+///////////////////////////////////////////////////////////////////////////
+
+//Going downward child
+const h1 = document.querySelector('h1');
+console.log(h1.childNodes);
+
+//Element.children includes only element nodes
+console.log(h1.children);
+console.log(h1.firstChild);
+console.log(h1.firstElementChild);
+
+h1.firstElementChild.style.color = 'blue';
+h1.lastElementChild.style.color = 'orangered';
+
+///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
 //selecting elements
@@ -54,26 +105,26 @@ document.addEventListener('keydown', function (e) {
 
 //------------------------------------------------------------------------
 
-//创建一个新的div，给其创建新的class
-//然后给其创建textContent和innerHTML，然后将其创建添加到DOM的某个位置
+// //创建一个新的div，给其创建新的class
+// //然后给其创建textContent和innerHTML，然后将其创建添加到DOM的某个位置
 
-const message = document.createElement('div');
-message.classList.add('cookie-message');
-// console.log(message);
+// const message = document.createElement('div');
+// message.classList.add('cookie-message');
+// // console.log(message);
 
-//跟innerHTML的内容可以相互覆盖
-// message.textContent = '创建新的textContent';
+// //跟innerHTML的内容可以相互覆盖
+// // message.textContent = '创建新的textContent';
 
-//将上面textContent的内容覆盖掉了，因为这其中包括了textContent的内容
-message.innerHTML = `可以有一段本文，然后具体的标签
-<button class="btn btn--close--cookie">按钮</button>`;
+// //将上面textContent的内容覆盖掉了，因为这其中包括了textContent的内容
+// message.innerHTML = `可以有一段本文，然后具体的标签
+// <button class="btn btn--close--cookie">按钮</button>`;
 
-const header = document.querySelector('.header');
-// header.prepend(message);
-// header.append(message);
+// const header = document.querySelector('.header');
+// // header.prepend(message);
+// // header.append(message);
 
-// header.after(message);
-header.before(message);
+// // header.after(message);
+// header.before(message);
 
 //------------------------------------------------------------------------
 
@@ -119,44 +170,183 @@ header.before(message);
 
 //------------------------------------------------------------------------
 
-//Attributes
-const logo = document.getElementById('logo');
+// //Attributes
+// const logo = document.getElementById('logo');
 
-//设置属性
-logo.className = '标准属性可以被.方法改变';
-logo.title = 'Change it!';
-logo.company = 'Jonas'; //dot方法只适用于标准属性,没有设置成功
-logo.setAttribute('titleSet', 'Does it work?'); //可以用于非标准犯法
-console.log(logo);
+// //设置属性
+// logo.className = '标准属性可以被.方法改变';
+// logo.title = 'Change it!';
+// logo.company = 'Jonas'; //dot方法只适用于标准属性,没有设置成功
+// logo.setAttribute('titleSet', 'Does it work?'); //可以用于非标准犯法
+// // console.log(logo);
 
-//读取属性
-console.log(logo.className);
-console.log(logo.titleSet);
-console.log(logo.getAttribute('titleSet'));
+// //读取属性
+// console.log(logo.className);
+// console.log(logo.titleSet);
+// console.log(logo.getAttribute('titleSet'));
 
-//.方法只能得到默认绝对属性值，getAttribute可以得到相对属性值（当前页面的属性值）
-console.log(logo.src); //固定的属性值
-console.log(logo.getAttribute('src')); //要放在分号中，相对的
+// //.方法只能得到默认绝对属性值，getAttribute可以得到相对属性值（当前页面的属性值）
+// console.log(logo.src); //固定的属性值
+// console.log(logo.getAttribute('src')); //要放在分号中，相对的
 
-//dataAttributes
-console.log(logo.dataset.versionControl);
+// //dataAttributes
+// console.log(logo.dataset.versionControl);
 
 //------------------------------------------------------------------------
 
-//add/remove/toggle/contains四种方法
+// //add/remove/toggle/contains四种方法
 
-//添加 add class
-logo.classList.add('good');
-console.log(logo);
+// //添加 add class
+// logo.classList.add('good');
+// //添加多个类值
+// logo.classList.add('pretty', 'girl');
+// //用展开语法添加多个类值
+// const cls = ['handsome', 'boy'];
+// logo.classList.add(...cls);
 
-//删除 remove class
+// //删除 remove class
 // logo.classList.remove('good');
-// console.log(logo);
+// logo.classList.remove('pretty', 'girl');
+// logo.classList.remove(...cls);
 
-//切换toggle class
-// logo.classList.toggle('bad'); //原本不存在，切换之后就存在了
-// console.log(logo);
+// //如果 visible 类值已存在，则移除它，否则添加它
+// logo.classList.toggle('原本不存在'); //原本不存在，切换之后就存在了
 
-//查看是否包含contains
-// console.log(logo.classList.contains('good'));
-// console.log(logo.classList.contains('title'));
+// //将类值 "标准属性可以被.方法改变" 替换成 "bar"
+// logo.classList.replace('标准属性可以被.方法改变', 'bar');
+// // console.log(logo);
+
+// //查看是否包含contains
+// console.log(logo.classList.contains('bar')); //true
+// console.log(logo.classList.contains('company')); //false
+
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+
+// //实现平滑滚动
+
+// //找到要点击的按钮跟要滚动到的section
+// const btnScrollTo = document.querySelector('.btn--scroll-to');
+// const section1 = document.querySelector('#section--1');
+
+// //对btnScrollTo设置监听
+// btnScrollTo.addEventListener('click', function (event) {
+//   console.log(event);
+//   console.log(event.target); //指向引发触发事件的元素
+
+//   //返回元素的大小及其相对于视口的位置
+//   console.log(event.target.getBoundingClientRect());
+
+//   //返回当前窗口的宽度和高度
+//   console.log(document.documentElement.clientWidth);
+//   console.log(document.documentElement.clientHeight);
+//   console.log(
+//     `current viewport width/height`,
+//     document.documentElement.clientWidth,
+//     document.documentElement.clientHeight
+//   );
+
+//   //获得X轴的滚动坐标数据
+//   console.log(window.pageXOffset);
+//   console.log(document.documentElement.scrollLeft);
+
+//   //获得Y轴的滚动坐标数据
+//   console.log(window.pageYOffset);
+//   console.log(document.documentElement.scrollTop);
+
+//   //整体处理
+//   console.log(`Current Scroll (X/Y)`, window.pageXOffset, window.pageYOffset);
+
+//   //滚动到section的位置
+//   const section1Coordinate = section1.getBoundingClientRect();
+//   console.log(section1Coordinate.left);
+//   console.log(section1Coordinate.top);
+
+//   // window.scrollTo(
+//   //   section1Coordinate.left + window.pageXOffset,
+//   //   section1Coordinate.top + window.pageYOffset
+//   // );
+
+//   // window.scrollTo({
+//   //   left: section1Coordinate.left + window.pageXOffset,
+//   //   top: section1Coordinate.top + window.pageYOffset,
+//   //   behavior: 'smooth',
+//   // });
+
+//   // 较新的浏览器支持的语法;
+//   section1.scrollIntoView({ behavior: 'smooth' });
+// });
+
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+
+//Types of Events and Event Handler
+
+//不同的event事件
+
+// const h1 = document.querySelector('.highlight');
+
+// const alertH1 = function () {
+//   alert('事件');
+//   // h1.removeEventListener('mouseenter', alertH1);
+// };
+
+// h1.addEventListener('mouseenter', alertH1);
+
+// //3秒之后删除这个事件监听
+// setTimeout(() => {
+//   h1.removeEventListener('mouseenter', alertH1);
+// }, 3000);
+// //on-event property
+// h1.onclick = fn;
+
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+
+// //事件传播练习
+// //rgb(255,255,255)
+
+// //创造一个随机整数
+// const randomInt = function (max, min) {
+//   return Math.trunc(Math.random() * (max - min + 1)) + min;
+// };
+
+// console.log(randomInt(0, 255));
+
+// //根据随机整数创造一个颜色
+// const randomColor = function () {
+//   return `rgb(${randomInt(255, 0)},${randomInt(255, 0)},${randomInt(255, 0)})`;
+// };
+
+// console.log(randomColor());
+
+// //监听a链接
+// const featuresLink = document.querySelector('.nav__link'); //找到第一个满足条件的
+
+// featuresLink.addEventListener('click', function (event) {
+//   this.style.backgroundColor = randomColor();
+//   // event.stopPropagation();
+//   console.log(event.target);
+//   console.log(event.currentTarget);
+// });
+
+// //找到navBar的ul,如果是对这部分进行事件监听，那么不会影响到它的下一层
+// const navBarUl = document.querySelector('.nav__links');
+// console.log(navBarUl);
+
+// navBarUl.addEventListener('click', function (event) {
+//   this.style.backgroundColor = randomColor();
+//   console.log(event.target);
+//   console.log(event.currentTarget);
+// });
+
+// const nav = document.querySelector('.nav');
+// nav.addEventListener(
+//   'click',
+//   function (event) {
+//     this.style.backgroundColor = randomColor();
+//     console.log(event.target);
+//     console.log(event.currentTarget);
+//   },
+//   true
+// );
