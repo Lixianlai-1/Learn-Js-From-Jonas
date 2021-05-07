@@ -82,6 +82,55 @@ console.log(h1.firstElementChild);
 h1.firstElementChild.style.color = 'blue';
 h1.lastElementChild.style.color = 'orangered';
 
+//going upwards：parents
+const header = document.querySelector('header');
+
+console.log(h1.parentElement);
+console.log(h1.parentNode);
+
+//closest
+h1.closest('header').style.backgroundColor = 'var(--color-primary)';
+
+//Going sideways:siblings
+console.log(h1.previousElementSibling);
+console.log(h1.previousSibling);
+
+console.log(h1.nextElementSibling);
+console.log(h1.nextSibling);
+
+console.log(h1.parentElement.children); //返回HTMLCollection
+
+//找到父元素节点，然后找到其所有的子节点
+//通过展开语法拆开HTMLCollection，放入数组中，然后遍历
+[...h1.parentElement.children].forEach(function (el) {
+  if (el !== h1) {
+    el.style.transform = 'scale(0.3)';
+  }
+});
+
+///////////////////////////////////////////////////////////////////////////
+
+//定义taps，定义taps的容器，定义taps下面的内容
+const taps = document.querySelectorAll('.operations__tab');
+const tapsContainer = document.querySelector('.operations__tab-container');
+const tapsContent = document.querySelectorAll('.operations__content');
+
+//通过冒泡原理，监听父元素
+tapsContainer.addEventListener('click', function (event) {
+  //当前触发的那个位置，找寻它的祖先元素中有.operations__tab类的，没找到就返回null
+  const clicked = event.target.closest('.operations__tab');
+
+  //!null为true，就返回，后面的程序不再执行。这种就叫guard clause，保护条款
+  if (!clicked) return;
+
+  //找到效果的那个class，也就是operations__tab--active，然后删除
+  taps.forEach(tEvent => {
+    tEvent.classList.remove('operations__tab--active');
+  });
+
+  clicked.classList.add('operations__tab--active');
+});
+
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
