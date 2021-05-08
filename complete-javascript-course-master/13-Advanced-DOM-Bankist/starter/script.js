@@ -7,6 +7,11 @@ const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
+const nav = document.querySelector('.nav');
+const h1 = document.querySelector('h1');
+const header = document.querySelector('header');
+const btnScrollTo = document.querySelector('.btn--scroll-to');
+const section1 = document.querySelector('#section--1');
 
 const openModal = function (e) {
   e.preventDefault();
@@ -71,7 +76,7 @@ document
 ///////////////////////////////////////////////////////////////////////////
 
 //Going downward child
-const h1 = document.querySelector('h1');
+
 console.log(h1.childNodes);
 
 //Element.children includes only element nodes
@@ -83,13 +88,12 @@ h1.firstElementChild.style.color = 'blue';
 h1.lastElementChild.style.color = 'orangered';
 
 //going upwards：parents
-const header = document.querySelector('header');
 
 console.log(h1.parentElement);
 console.log(h1.parentNode);
 
-//closest
-h1.closest('header').style.backgroundColor = 'var(--color-primary)';
+// //closest
+// h1.closest('header').style.backgroundColor = 'var(--color-primary)';
 
 //Going sideways:siblings
 console.log(h1.previousElementSibling);
@@ -100,39 +104,137 @@ console.log(h1.nextSibling);
 
 console.log(h1.parentElement.children); //返回HTMLCollection
 
-//找到父元素节点，然后找到其所有的子节点
-//通过展开语法拆开HTMLCollection，放入数组中，然后遍历
-[...h1.parentElement.children].forEach(function (el) {
-  if (el !== h1) {
-    el.style.transform = 'scale(0.3)';
-  }
-});
+// //找到父元素节点，然后找到其所有的子节点
+// //通过展开语法拆开HTMLCollection，放入数组中，然后遍历
+// [...h1.parentElement.children].forEach(function (el) {
+//   if (el !== h1) {
+//     el.style.transform = 'scale(0.3)';
+//   }
+// });
 
 ///////////////////////////////////////////////////////////////////////////
 
-//定义taps，定义taps的容器，定义taps下面的内容
-const taps = document.querySelectorAll('.operations__tab');
-const tapsContainer = document.querySelector('.operations__tab-container');
-const tapsContent = document.querySelectorAll('.operations__content');
+//定义tabs，定义tabs的容器，定义tabs下面的内容
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabsContent = document.querySelectorAll('.operations__content');
 
 //通过冒泡原理，监听父元素
-tapsContainer.addEventListener('click', function (event) {
+tabsContainer.addEventListener('click', function (event) {
   //当前触发的那个位置，找寻它的祖先元素中有.operations__tab类的，没找到就返回null
   const clicked = event.target.closest('.operations__tab');
+  console.log(clicked.dataset.tab);
 
   //!null为true，就返回，后面的程序不再执行。这种就叫guard clause，保护条款
   if (!clicked) return;
 
   //找到效果的那个class，也就是operations__tab--active，然后删除
-  taps.forEach(tEvent => {
+  tabs.forEach(tEvent => {
     tEvent.classList.remove('operations__tab--active');
   });
 
   clicked.classList.add('operations__tab--active');
+
+  //删除所有文本出现的效果
+  tabsContent.forEach(c => {
+    console.log(c);
+    c.classList.remove('operations__content--active'); //不要加点！
+  });
+
+  //找到被点击button的关联content
+  const beclickedContnent = document.querySelector(
+    `.operations__content--${clicked.dataset.tab}`
+  );
+
+  //让关联content的内容active生效
+  beclickedContnent.classList.add('operations__content--active');
 });
 
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------
+
+//Menu fade animation导航栏褪色动画
+
+const opacityHandler = function (e, opacity) {
+  //如果当前触发函数的classList中有.nav__link，也就是确保hover到a链接才生效
+  // console.log(this);
+  if (e.target.classList.contains('nav__link')) {
+    //找到目前鼠标hover的那个a链接
+    const link = e.target;
+
+    //通过a链接，再通过closest找到所有的ul（如果是直接找，有什么区别吗？没有）
+    const ohterLink = link.closest('.nav').querySelectorAll('.nav__link');
+    // const ohterLink = document.querySelectorAll('.nav__link');
+
+    ohterLink.forEach(function (el) {
+      if (el !== link) {
+        el.style.opacity = opacity;
+      }
+    });
+
+    //这一步，找到父元素，然后再找父元素下面的图片（只有这一个图片）
+    const logo = link.closest('.nav').querySelector('img');
+    logo.style.opacity = opacity;
+  }
+};
+
+nav.addEventListener('mouseover', function (e) {
+  opacityHandler(e, 0.5);
+});
+
+nav.addEventListener('mouseout', function (e) {
+  opacityHandler(e, 1);
+});
+
+// const opacityHandler = function (e) {
+//   //如果当前触发函数的classList中有.nav__link，也就是确保hover到a链接才生效
+//   console.log(this, e.currentTarget);
+//   const opacityValue = this;
+//   if (e.target.classList.contains('nav__link')) {
+//     //找到目前鼠标hover的那个a链接
+//     const link = e.target;
+
+//     //通过a链接，再通过closest找到所有的ul（如果是直接找，有什么区别吗？没有）
+//     const ohterLink = link.closest('.nav').querySelectorAll('.nav__link');
+//     // const ohterLink = document.querySelectorAll('.nav__link');
+
+//     ohterLink.forEach(function (el) {
+//       if (el !== link) {
+//         console.log(el);
+//         el.style.opacity = this;
+//       }
+//     });
+
+//     //这一步，找到父元素，然后再找父元素下面的图片（只有这一个图片）
+//     const logo = link.closest('.nav').querySelector('img');
+//     logo.style.opacity = this;
+//   }
+// };
+
+// // bind返回新的函数，它的第一个参数，代表this，后续参数就是新函数的参数
+// nav.addEventListener('mouseover', opacityHandler.bind(0.5));
+// nav.addEventListener('mouseout', opacityHandler.bind(1));
+
+//---------------------------------------------------------------------------------------
+
+//得到section1的坐标对象
+const initialSectionScroll = section1.getBoundingClientRect();
+console.log(initialSectionScroll);
+
+//实现一个固定的导航栏
+window.addEventListener('scroll', function () {
+  console.log(window.scrollY);
+
+  //在当前视窗的顶部Y轴数值，大于默认的section1的顶部位置时，添加sticky效果，形成固定栏
+  if (window.scrollY > initialSectionScroll.top) {
+    nav.classList.add('sticky');
+    console.log(nav);
+  } else {
+    nav.classList.remove('sticky');
+  }
+});
+
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
 
 //selecting elements
 
