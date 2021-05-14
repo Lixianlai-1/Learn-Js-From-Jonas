@@ -154,41 +154,9 @@ tabsContainer.addEventListener('click', function (event) {
 
 //Menu fade animation导航栏褪色动画
 
-const opacityHandler = function (e, opacity) {
-  //如果当前触发函数的classList中有.nav__link，也就是确保hover到a链接才生效
-  // console.log(this);
-  if (e.target.classList.contains('nav__link')) {
-    //找到目前鼠标hover的那个a链接
-    const link = e.target;
-
-    //通过a链接，再通过closest找到所有的ul（如果是直接找，有什么区别吗？没有）
-    const ohterLink = link.closest('.nav').querySelectorAll('.nav__link');
-    // const ohterLink = document.querySelectorAll('.nav__link');
-
-    ohterLink.forEach(function (el) {
-      if (el !== link) {
-        el.style.opacity = opacity;
-      }
-    });
-
-    //这一步，找到父元素，然后再找父元素下面的图片（只有这一个图片）
-    const logo = link.closest('.nav').querySelector('img');
-    logo.style.opacity = opacity;
-  }
-};
-
-nav.addEventListener('mouseover', function (e) {
-  opacityHandler(e, 0.5);
-});
-
-nav.addEventListener('mouseout', function (e) {
-  opacityHandler(e, 1);
-});
-
-// const opacityHandler = function (e) {
+// const opacityHandler = function (e, opacity) {
 //   //如果当前触发函数的classList中有.nav__link，也就是确保hover到a链接才生效
-//   console.log(this, e.currentTarget);
-//   const opacityValue = this;
+//   // console.log(this);
 //   if (e.target.classList.contains('nav__link')) {
 //     //找到目前鼠标hover的那个a链接
 //     const link = e.target;
@@ -199,40 +167,295 @@ nav.addEventListener('mouseout', function (e) {
 
 //     ohterLink.forEach(function (el) {
 //       if (el !== link) {
-//         console.log(el);
-//         el.style.opacity = this;
+//         el.style.opacity = opacity;
 //       }
 //     });
 
 //     //这一步，找到父元素，然后再找父元素下面的图片（只有这一个图片）
 //     const logo = link.closest('.nav').querySelector('img');
-//     logo.style.opacity = this;
+//     logo.style.opacity = opacity;
 //   }
 // };
 
-// // bind返回新的函数，它的第一个参数，代表this，后续参数就是新函数的参数
-// nav.addEventListener('mouseover', opacityHandler.bind(0.5));
-// nav.addEventListener('mouseout', opacityHandler.bind(1));
+// nav.addEventListener('mouseover', function (e) {
+//   opacityHandler(e, 0.5);
+// });
+
+// nav.addEventListener('mouseout', function (e) {
+//   opacityHandler(e, 1);
+// });
+
+const opacityHandler = function (e) {
+  //如果当前触发函数的classList中有.nav__link，也就是确保hover到a链接才生效
+  const opacityValue = this;
+  console.log(this, e.currentTarget);
+  console.log(opacityValue);
+
+  if (e.target.classList.contains('nav__link')) {
+    //找到目前鼠标hover的那个a链接
+    const link = e.target;
+
+    //通过a链接，再通过closest找到所有的ul（如果是直接找，有什么区别吗？没有）
+    const ohterLink = link.closest('.nav').querySelectorAll('.nav__link');
+    // const ohterLink = document.querySelectorAll('.nav__link');
+
+    ohterLink.forEach(function (el) {
+      if (el !== link) {
+        console.log(this); //这里的this指向window,严格模式下是undefined.
+        console.log(el.currentTarget);
+        el.style.opacity = opacityValue;
+      }
+    });
+
+    //这一步，找到父元素，然后再找父元素下面的图片（只有这一个图片）
+    const logo = link.closest('.nav').querySelector('img');
+    logo.style.opacity = this;
+  }
+};
+
+// bind返回新的函数，它的第一个参数，代表this，后续参数就是新函数的参数
+nav.addEventListener('mouseover', opacityHandler.bind(0.5));
+nav.addEventListener('mouseout', opacityHandler.bind(1));
 
 //---------------------------------------------------------------------------------------
 
 //得到section1的坐标对象
-const initialSectionScroll = section1.getBoundingClientRect();
-console.log(initialSectionScroll);
+// const initialSectionScroll = section1.getBoundingClientRect();
+// console.log(initialSectionScroll);
 
-//实现一个固定的导航栏
-window.addEventListener('scroll', function () {
-  console.log(window.scrollY);
+// //实现一个固定的导航栏，老方法
+// window.addEventListener('scroll', function () {
+//   console.log(window.scrollY);
 
-  //在当前视窗的顶部Y轴数值，大于默认的section1的顶部位置时，添加sticky效果，形成固定栏
-  if (window.scrollY > initialSectionScroll.top) {
+//   //在当前视窗的顶部Y轴数值，大于默认的section1的顶部位置时，添加sticky效果，形成固定栏
+//   if (window.scrollY > initialSectionScroll.top) {
+//     nav.classList.add('sticky');
+//     console.log(nav);
+//   } else {
+//     nav.classList.remove('sticky');
+//   }
+// });
+
+//---------------------------------------------------------------------------------------
+
+//运用interaction observer API
+
+// //配置一个回调函数
+// const callbackFn = function (entries, observer) {
+//   const [entry] = entries;
+//   console.log(entry);
+//   // entries.forEach(entry => {
+//   //   console.log(entry);
+//   // });
+// };
+
+// let options = {
+//   //指定根元素为null，为浏览器视窗
+//   root: null,
+//   //阈值为0.1意味着目标元素的百分之10出现在root选项指定的元素中可见时，回调函数将会被执行。
+//   threshold: 0.1,
+// };
+
+// //创造一个IntersectionObserver对象
+// let observer = new IntersectionObserver(callbackFn, options);
+
+// //为观察者配置一个目标元素
+// observer.observe(section1);
+
+//创建observer回调函数，放在intersectionObserver对象中
+
+const hearderCallback = function (entries, observer) {
+  //可以通过解构数组，得到数组中的intersectionObserverEntry
+  const [entry] = entries;
+  // console.log(entries);
+  // console.log(entry);
+
+  if (!entry.intersectionRatio) {
     nav.classList.add('sticky');
-    console.log(nav);
   } else {
     nav.classList.remove('sticky');
   }
+};
+
+//找到导航栏的动态高度
+const navHeight = nav.getBoundingClientRect().height;
+console.log(navHeight);
+
+//创造一个IntersectionObserver对象，在其中直接设置option
+const headerObserver = new IntersectionObserver(hearderCallback, {
+  //相对于视窗
+  root: null,
+
+  //值必须有px单位后缀，这里为什么要用-号呢？
+  rootMargin: `-${navHeight}px 0px 0px 0px`,
+
+  //在视窗中没有与header的交叉点时，执行回调函数
+  threshold: 0,
 });
 
+//设置观察目标元素
+headerObserver.observe(header);
+
+//---------------------------------------------------------------------------------------
+
+const revealFn = function (entries, observer) {
+  //解构数组
+  const [entry] = entries;
+  console.log(entry);
+
+  //避免section1部分立刻出现,因为一开始会默认出现一个intersectionObserverEntry
+  if (!entry.isIntersecting) return;
+
+  //给出现的那个部分删除隐藏的class
+  entry.target.classList.remove('section--hidden');
+
+  //删除已经observer的entry，不再产生了
+  observer.unobserve(entry.target);
+};
+
+const sectionObserver = new IntersectionObserver(revealFn, {
+  //以视窗为标准
+  root: null,
+
+  //当视窗与section交叉到百分之13的时候，执行回调函数
+  threshold: 0.13,
+});
+
+const sections = document.querySelectorAll('section');
+sections.forEach(function (section) {
+  //让每个section隐藏起来
+  // section.classList.add('section--hidden');
+
+  //注意配置一个目标元素
+  sectionObserver.observe(section);
+});
+
+//---------------------------------------------------------------------------------------
+
+//懒加载图片
+const dataSrc = document.querySelectorAll('img[data-src]');
+console.log(dataSrc);
+
+const dataSrcFn = function (entries, observer) {
+  //entries跟观察器中的threshold相关，threshold只有一个数时，可以这么用
+  const [entry] = entries;
+  console.log(entry);
+
+  //默认出现的intersectionObserverEntry，不执行这部分
+  if (!entry.isIntersecting) return;
+
+  //将不清晰的图片转化为清晰的图片
+  entry.target.src = entry.target.dataset.src;
+
+  //当之前的换图行为加载完成之后，再进行删除filter模糊效果
+  entry.target.addEventListener('load', function () {
+    entry.target.classList.remove('lazy-img');
+  });
+
+  //然后不再观察当前触发元素
+  observer.unobserve(entry.target);
+};
+
+const imgObserver = new IntersectionObserver(dataSrcFn, {
+  root: null,
+  threshold: 0,
+  // 在出现懒加载图片之上的100px，就开始执行函数。在slow 3G的网络下尤为有用
+  rootMargin: '200px',
+});
+
+dataSrc.forEach(img => {
+  imgObserver.observe(img);
+});
+
+//---------------------------------------------------------------------------------------
+
+//slide部分
+const slides = document.querySelectorAll('.slide');
+const slider = document.querySelector('.slider');
+const rightSlideBtn = document.querySelector('.slider__btn--right');
+const leftSlideBtn = document.querySelector('.slider__btn--left');
+let currentSlide = 0;
+const maxSlideLength = slides.length;
+const dots = document.querySelector('.dots');
+
+const GoToSlide = function (slide) {
+  slides.forEach((s, i) => {
+    s.style.transform = `translateX(${100 * (i - slide)}%)`;
+  });
+};
+
+//实现原始顺序排列
+GoToSlide(0);
+
+const nextSlide = function () {
+  if (currentSlide === maxSlideLength - 1) {
+    currentSlide = 0;
+  } else {
+    currentSlide++; //0 1 2
+  }
+  GoToSlide(currentSlide);
+};
+
+//实现左边轮播
+const previousSlide = function () {
+  if (currentSlide === 0) {
+    currentSlide = maxSlideLength - 1; //不能省略这一步，因为相关的计算是连续的
+  } else {
+    currentSlide--;
+  }
+  GoToSlide(currentSlide);
+};
+
+rightSlideBtn.addEventListener('click', nextSlide);
+leftSlideBtn.addEventListener('click', previousSlide);
+
+//增加方向键的监听
+document.addEventListener('keydown', function (e) {
+  //按下自己想要用的key，然后查看具体的拼写，然后再设置条件
+  console.log(e);
+
+  if (e.key === 'ArrowRight') nextSlide();
+  if (e.key === 'ArrowLeft') previousSlide();
+});
+
+slides.forEach((_, i) => {
+  dots.insertAdjacentHTML(
+    'beforeend',
+    `
+  <button class="dots__dot" data-slide=${i}></button>
+  `
+  );
+});
+
+// //实现排列
+// slides.forEach((slide, index) => {
+//   //0% 100% 200%
+//   slide.style.transform = `translateX(${100 * index}%)`;
+// });
+
+// slider.style.overflow = 'visible';
+
+//我的做法
+// rightSlideBtn.addEventListener('click', function () {
+//   currentSlide++; //1,2,3
+
+//   //0       100%     200%
+//   //-100%   0        100%
+//   //-200%   -100%    0
+//   //0       100%     200%
+//   slides.forEach((slide, index) => {
+//     if (currentSlide === maxSlideLength) {
+//       slide.style.transform = `translateX(${100 * index}%)`;
+
+//       //重新设置为0
+//       currentSlide = 0;
+//     } else {
+//       slide.style.transform = `translateX(${100 * (index - currentSlide)}%)`;
+//     }
+//   });
+// });
+
+//0 - 2    2 -1   0
 //---------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------
 
@@ -500,4 +723,4 @@ window.addEventListener('scroll', function () {
 //     console.log(event.currentTarget);
 //   },
 //   true
-// );
+// )
