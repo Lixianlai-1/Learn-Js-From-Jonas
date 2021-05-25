@@ -66,10 +66,10 @@ document
 
     if (event.target.classList.contains('nav__link')) {
       const id = event.target.getAttribute('href');
-      console.log(id);
+      // console.log(id);
       document.querySelector(id).scrollIntoView({ behavior: 'smooth' });
     } else {
-      console.log('请在a链接上点击');
+      // console.log('请在a链接上点击');
     }
   });
 
@@ -77,32 +77,32 @@ document
 
 //Going downward child
 
-console.log(h1.childNodes);
+// console.log(h1.childNodes);
 
 //Element.children includes only element nodes
-console.log(h1.children);
-console.log(h1.firstChild);
-console.log(h1.firstElementChild);
+// console.log(h1.children);
+// console.log(h1.firstChild);
+// console.log(h1.firstElementChild);
 
 h1.firstElementChild.style.color = 'blue';
 h1.lastElementChild.style.color = 'orangered';
 
 //going upwards：parents
 
-console.log(h1.parentElement);
-console.log(h1.parentNode);
+// console.log(h1.parentElement);
+// console.log(h1.parentNode);
 
 // //closest
 // h1.closest('header').style.backgroundColor = 'var(--color-primary)';
 
 //Going sideways:siblings
-console.log(h1.previousElementSibling);
-console.log(h1.previousSibling);
+// console.log(h1.previousElementSibling);
+// console.log(h1.previousSibling);
 
-console.log(h1.nextElementSibling);
-console.log(h1.nextSibling);
+// console.log(h1.nextElementSibling);
+// console.log(h1.nextSibling);
 
-console.log(h1.parentElement.children); //返回HTMLCollection
+// console.log(h1.parentElement.children); //返回HTMLCollection
 
 // //找到父元素节点，然后找到其所有的子节点
 // //通过展开语法拆开HTMLCollection，放入数组中，然后遍历
@@ -123,7 +123,7 @@ const tabsContent = document.querySelectorAll('.operations__content');
 tabsContainer.addEventListener('click', function (event) {
   //当前触发的那个位置，找寻它的祖先元素中有.operations__tab类的，没找到就返回null
   const clicked = event.target.closest('.operations__tab');
-  console.log(clicked.dataset.tab);
+  // console.log(clicked.dataset.tab);
 
   //!null为true，就返回，后面的程序不再执行。这种就叫guard clause，保护条款
   if (!clicked) return;
@@ -137,7 +137,7 @@ tabsContainer.addEventListener('click', function (event) {
 
   //删除所有文本出现的效果
   tabsContent.forEach(c => {
-    console.log(c);
+    // console.log(c);
     c.classList.remove('operations__content--active'); //不要加点！
   });
 
@@ -188,8 +188,8 @@ tabsContainer.addEventListener('click', function (event) {
 const opacityHandler = function (e) {
   //如果当前触发函数的classList中有.nav__link，也就是确保hover到a链接才生效
   const opacityValue = this;
-  console.log(this, e.currentTarget);
-  console.log(opacityValue);
+  // console.log(this, e.currentTarget);
+  // console.log(opacityValue);
 
   if (e.target.classList.contains('nav__link')) {
     //找到目前鼠标hover的那个a链接
@@ -201,8 +201,8 @@ const opacityHandler = function (e) {
 
     ohterLink.forEach(function (el) {
       if (el !== link) {
-        console.log(this); //这里的this指向window,严格模式下是undefined.
-        console.log(el.currentTarget);
+        // console.log(this); //这里的this指向window,严格模式下是undefined.
+        // console.log(el.currentTarget);
         el.style.opacity = opacityValue;
       }
     });
@@ -301,7 +301,7 @@ headerObserver.observe(header);
 const revealFn = function (entries, observer) {
   //解构数组
   const [entry] = entries;
-  console.log(entry);
+  // console.log(entry);
 
   //避免section1部分立刻出现,因为一开始会默认出现一个intersectionObserverEntry
   if (!entry.isIntersecting) return;
@@ -339,7 +339,7 @@ console.log(dataSrc);
 const dataSrcFn = function (entries, observer) {
   //entries跟观察器中的threshold相关，threshold只有一个数时，可以这么用
   const [entry] = entries;
-  console.log(entry);
+  // console.log(entry);
 
   //默认出现的intersectionObserverEntry，不执行这部分
   if (!entry.isIntersecting) return;
@@ -376,16 +376,43 @@ const rightSlideBtn = document.querySelector('.slider__btn--right');
 const leftSlideBtn = document.querySelector('.slider__btn--left');
 let currentSlide = 0;
 const maxSlideLength = slides.length;
-const dots = document.querySelector('.dots');
+const dotsContainer = document.querySelector('.dots');
+const Dots = document.querySelectorAll('.dots__dot');
 
+//动态增加黑点
+const createHTML = function () {
+  slides.forEach((_, i) => {
+    dotsContainer.insertAdjacentHTML(
+      'beforeend',
+      `<button class="dots__dot" data-slide="${i}"> </button> `
+    );
+  });
+};
+
+//决定跳转到哪个slide
 const GoToSlide = function (slide) {
   slides.forEach((s, i) => {
+    //这里是轮播图的每一个部分都会跟着变化，所以用了forEach
     s.style.transform = `translateX(${100 * (i - slide)}%)`;
   });
 };
 
 //实现原始顺序排列
-GoToSlide(0);
+// GoToSlide(0);
+
+const activeDot = function (slide) {
+  //为什么要用document.querySelectorAll('.dots__dot')，因为要及时的删除，Dots已经是个固定的Nodelist了
+  document.querySelectorAll('.dots__dot').forEach(function (dot) {
+    dot.classList.remove('dots__dot--active');
+  });
+
+  // 或者通过右边找到document.querySelector(`button[data-slide="${slide}"]`)
+
+  //找到当前点击的那个slide，这个slide来自于监听事件的e.target.dataset.slide
+  document
+    .querySelector(`button[data-slide="${slide}"]`)
+    .classList.add('dots__dot--active');
+};
 
 const nextSlide = function () {
   if (currentSlide === maxSlideLength - 1) {
@@ -394,6 +421,7 @@ const nextSlide = function () {
     currentSlide++; //0 1 2
   }
   GoToSlide(currentSlide);
+  activeDot(currentSlide);
 };
 
 //实现左边轮播
@@ -404,7 +432,16 @@ const previousSlide = function () {
     currentSlide--;
   }
   GoToSlide(currentSlide);
+  activeDot(currentSlide);
 };
+
+const initFn = function () {
+  createHTML();
+  activeDot(0); //让第一个轮播点变黑
+  GoToSlide(0); //原始排列
+};
+
+initFn();
 
 rightSlideBtn.addEventListener('click', nextSlide);
 leftSlideBtn.addEventListener('click', previousSlide);
@@ -412,20 +449,50 @@ leftSlideBtn.addEventListener('click', previousSlide);
 //增加方向键的监听
 document.addEventListener('keydown', function (e) {
   //按下自己想要用的key，然后查看具体的拼写，然后再设置条件
-  console.log(e);
+  // console.log(e);
 
   if (e.key === 'ArrowRight') nextSlide();
   if (e.key === 'ArrowLeft') previousSlide();
 });
 
-slides.forEach((_, i) => {
-  dots.insertAdjacentHTML(
-    'beforeend',
-    `
-  <button class="dots__dot" data-slide=${i}></button>
-  `
-  );
+dotsContainer.addEventListener('click', function (e) {
+  //帮助筛选，当点击到具体的button时，才进行下一步
+  if (e.target.classList.contains('dots__dot')) {
+    //通过dataset找到相应的slide值
+
+    //得到一个DOMStringMap对象
+    console.log(e.target.dataset);
+
+    const slide = e.target.dataset.slide;
+
+    GoToSlide(slide);
+    activeDot(slide);
+    console.log(slide);
+
+    if (slide > 0) {
+      currentSlide = 0;
+    }
+  }
 });
+
+/////////////////////////////////////////////////////////////////
+//lifecycle DOM Events
+document.addEventListener('DOMContentLoaded', function () {
+  //只需要把script部分放在HTML的最底部就可以省略这个部分了
+  console.log('HTML parsed and DOM tree built');
+});
+
+document.addEventListener('load', function (e) {
+  console.log('page full loaded', e);
+});
+
+// window.addEventListener('beforeunload', event => {
+//   console.log(event);
+//   // Cancel the event as stated by the standard.
+//   event.preventDefault();
+//   // Chrome requires returnValue to be set.
+//   event.returnValue = '';
+// });
 
 // //实现排列
 // slides.forEach((slide, index) => {
