@@ -449,9 +449,18 @@ leftSlideBtn.addEventListener('click', previousSlide);
 //增加方向键的监听
 document.addEventListener('keydown', function (e) {
   //按下自己想要用的key，然后查看具体的拼写，然后再设置条件
-  // console.log(e);
 
-  if (e.key === 'ArrowRight') nextSlide();
+  if (e.key === 'ArrowRight') {
+    if (currentSlide === maxSlideLength - 1) {
+      currentSlide = 0;
+    } else {
+      currentSlide++; //0 1 2
+    }
+    console.log(e);
+    console.log(currentSlide);
+    GoToSlide(currentSlide);
+    activeDot(currentSlide);
+  }
   if (e.key === 'ArrowLeft') previousSlide();
 });
 
@@ -463,15 +472,14 @@ dotsContainer.addEventListener('click', function (e) {
     //得到一个DOMStringMap对象
     console.log(e.target.dataset);
 
-    const slide = e.target.dataset.slide;
+    //因为点击轮播点会改变当前的currentSlide，而currentSlide是数字，所以需要用Number转化
+    const slide = Number(e.target.dataset.slide);
+    // const { slide } = e.target.dataset;
 
     GoToSlide(slide);
     activeDot(slide);
     console.log(slide);
-
-    if (slide > 0) {
-      currentSlide = 0;
-    }
+    currentSlide = slide;
   }
 });
 
