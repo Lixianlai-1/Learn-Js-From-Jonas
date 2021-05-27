@@ -17,6 +17,9 @@ const Person = function (firstName, lastName) {
 const Mark = new Person('Mark', 'Li');
 console.log(Mark);
 
+//判断变量Mark是否为Person的实例
+console.log(Mark instanceof Person);
+
 //1. New {} is created
 //2. function is called
 //3. {} linked to the prototype
