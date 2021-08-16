@@ -13,6 +13,24 @@
 
     <link rel="stylesheet" href="style.css" />
 
+    <!-- 在这里引用托管的Leaflet -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""
+    />
+
+    <!-- <script defer src="lefletChinese.js"></script> -->
+
+    <script
+      defer
+      src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+      integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+      crossorigin=""
+    ></script>
+
+    <!-- <script defer src="/useToPractice.js"></script> -->
     <script defer src="script.js"></script>
     <title>mapty // Map your workouts</title>
   </head>
@@ -118,6 +136,7 @@
       </p>
     </div>
 
+    <!-- 创建一个容器div存放你的地图，设置id并渲染一些简单的样式（注意：一定要有相应的height属性） -->
     <div id="map"></div>
   </body>
 </html>

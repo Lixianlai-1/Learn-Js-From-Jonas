@@ -286,7 +286,7 @@ const headerObserver = new IntersectionObserver(hearderCallback, {
   //相对于视窗
   root: null,
 
-  //值必须有px单位后缀，这里为什么要用-号呢？
+  //值必须有px单位后缀，这里为什么要用-号呢？这里就代表负margin
   rootMargin: `-${navHeight}px 0px 0px 0px`,
 
   //在视窗中没有与header的交叉点时，执行回调函数
