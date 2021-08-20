@@ -27,6 +27,8 @@ class Workout {
 }
 
 class Running extends Workout {
+  // type = 'running';
+
   constructor(coords, distance, duration, cadence) {
     super(coords, distance, duration);
     this.cadence = cadence;
@@ -43,6 +45,8 @@ class Running extends Workout {
 }
 
 class Cycling extends Workout {
+  // type = 'cycling';
+
   constructor(coords, distance, duration, elevationGain) {
     super(coords, distance, duration);
     this.elevationGain = elevationGain;
@@ -64,6 +68,7 @@ console.log(run1, cycling1);
 class App {
   #map;
   #mapEvent;
+  #workouts = [];
 
   constructor() {
     //创建实例时自动调用构造函数
@@ -131,8 +136,70 @@ class App {
   }
 
   _newWorkout(e) {
-    //注意这里的preventDefault后面要加()
+    //因为是普通函数，需要手动return
+    // const validInputs = function (...inputs) {
+    //   return inputs.every(input => Number.isFinite(input));
+    // };
+
+    //判断每个值都为有限数，因为是箭头函数，所以会自动return
+    const validInputs = (...inputs) =>
+      inputs.every(input => Number.isFinite(input));
+
+    //判断每个数是否为正数
+    const positveNum = (...inputs) => {
+      return inputs.every(input => input > 0);
+    };
+
     e.preventDefault();
+    // Get date from form
+    const type = inputType.value;
+
+    //通过+转化为数字
+    const distance = +inputDistance.value;
+    const duration = +inputDuration.value;
+    const { lat, lng } = this.#mapEvent.latlng;
+    let workout;
+
+    // If workout running, create running object
+    if (type === 'running') {
+      const cadence = +inputCadence.value;
+
+      // Check value is valid or not
+      if (
+        !validInputs(distance, duration, cadence) ||
+        !positveNum(distance, duration, cadence)
+      ) {
+        console.log(distance, duration, cadence);
+        return alert('所有值都需要输入正数哦');
+      }
+
+      workout = new Running([lat, lng], distance, duration, cadence);
+    }
+
+    // If workout cycling, crete cycling object
+    if (type === 'cycling') {
+      const elevation = +inputElevation.value;
+
+      if (
+        !validInputs(distance, duration, elevation) ||
+        !positveNum(distance, duration)
+      ) {
+        return alert('请输入正数');
+      }
+
+      workout = new Cycling([lat, lng], distance, duration, elevation);
+    }
+
+    //注意push的方式，之前都搞错了
+    this.#workouts.push(workout);
+    console.log(workout);
+    console.log(this.#workouts);
+
+    // Add new object in workout array
+
+    // Render workout on map as marker
+
+    //注意这里的preventDefault后面要加()
 
     //每次重新提交之后，输入框中的内容再次为空
     inputDuration.value =
@@ -141,14 +208,19 @@ class App {
       inputElevation.value =
         '';
 
-    const { lat, lng } = this.#mapEvent.latlng;
-    L.marker([lat, lng], { opacity: 0 })
+    //这里相当于是直接调用这个函数，其中的this没有改变，所以不需要用bind(this)
+    this.renderWorkout(workout);
+  }
+
+  renderWorkout(workout) {
+    console.log(workout.type);
+    L.marker(workout.coords)
       .addTo(this.#map)
       .bindPopup(
         L.popup({
           maxWidth: 300,
           minWidth: 50,
-          className: 'running-popup',
+          className: `${workout.type}-popup`,
           autoClose: false,
           closeOnClick: false,
         })
