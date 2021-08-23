@@ -1,8 +1,5 @@
 'use strict';
 
-// prettier-ignore
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
 const form = document.querySelector('.form');
 const containerWorkouts = document.querySelector('.workouts');
 const inputType = document.querySelector('.form__input--type');
@@ -24,17 +21,45 @@ class Workout {
     this.distance = distance;
     this.duration = duration;
   }
+
+  //在父类中设置，以便于子类能够继承，不用重写两遍
+  _setDescriptioin() {
+    // prettier-ignore
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+
+    // 首字母大写并用slice方法与后面的字符串拼接
+    // 通过Date和getMonth得到具体的数字，然后将其作为索引值，得到月份数组中的内容
+    // getDate得到当月的多少号
+    this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${
+      months[this.date.getMonth()]
+    } ${this.date.getDate()}
+    `;
+  }
 }
 
 class Running extends Workout {
-  // type = 'running';
+  type = 'running';
 
   constructor(coords, distance, duration, cadence) {
     super(coords, distance, duration);
     this.cadence = cadence;
 
-    //直接执行
+    //直接执行,在对象中增加了一个pace(步速)的属性
     this.calcPace();
+    this._setDescriptioin();
   }
 
   // min/duration
@@ -45,17 +70,20 @@ class Running extends Workout {
 }
 
 class Cycling extends Workout {
-  // type = 'cycling';
+  // 如没有这个type，renderWork的很多步骤就没法做，比如无法形成新的html表单
+  type = 'cycling';
 
   constructor(coords, distance, duration, elevationGain) {
     super(coords, distance, duration);
     this.elevationGain = elevationGain;
     this.calcSpeed();
+    this._setDescriptioin();
   }
 
   // distance / h
   calcSpeed() {
     //通过this.speed，给当前对象创建属性并赋值
+    //尽管用户输入的是字符串数字，但字符串数字减乘除后的返回的是数字（加法的结果还是字符串）
     this.speed = this.distance / (this.duration / 60);
     return this.speed;
   }
@@ -69,6 +97,7 @@ class App {
   #map;
   #mapEvent;
   #workouts = [];
+  type;
 
   constructor() {
     //创建实例时自动调用构造函数
@@ -129,6 +158,26 @@ class App {
     // inputDuration.focus();
   }
 
+  // 当用户提交了新的Workout时，自动隐藏
+  _hiddenForm() {
+    // 每次重新提交之后，输入框中的内容再次为空
+    inputDuration.value =
+      inputDistance.value =
+      inputCadence.value =
+      inputElevation.value =
+        '';
+
+    // 先让整个样式消失不见
+    form.style.display = 'none';
+
+    form.classList.add('hidden');
+
+    // 设置一秒钟之后让form重新出现，如果没有这一步，那么再次点击地图将无法输入新的Workout
+    setTimeout(function () {
+      form.style.display = 'grid';
+    }, 1000);
+  }
+
   _toggleElevationField() {
     //选择running和cycling时，第四个输入框的变化
     inputElevation.closest('.form__row').classList.toggle('form__row--hidden');
@@ -152,7 +201,7 @@ class App {
 
     e.preventDefault();
     // Get date from form
-    const type = inputType.value;
+    this.type = inputType.value;
 
     //通过+转化为数字
     const distance = +inputDistance.value;
@@ -161,7 +210,7 @@ class App {
     let workout;
 
     // If workout running, create running object
-    if (type === 'running') {
+    if (this.type === 'running') {
       const cadence = +inputCadence.value;
 
       // Check value is valid or not
@@ -177,7 +226,7 @@ class App {
     }
 
     // If workout cycling, crete cycling object
-    if (type === 'cycling') {
+    if (this.type === 'cycling') {
       const elevation = +inputElevation.value;
 
       if (
@@ -208,25 +257,95 @@ class App {
       inputElevation.value =
         '';
 
-    //这里相当于是直接调用这个函数，其中的this没有改变，所以不需要用bind(this)
-    this.renderWorkout(workout);
+    // 这里相当于是直接调用这个函数，其中的this没有改变，所以不需要用bind(this)
+    // 必须在此处调用，因为需要用到workout
+    this._renderWorkoutMaker(workout);
+    this._renderWorkout(workout);
+
+    //让之前的输入表单消失
+    this._hiddenForm();
   }
 
-  renderWorkout(workout) {
-    console.log(workout.type);
+  _renderWorkoutMaker(workout) {
+    console.log(this.type);
     L.marker(workout.coords)
       .addTo(this.#map)
       .bindPopup(
         L.popup({
           maxWidth: 300,
           minWidth: 50,
-          className: `${workout.type}-popup`,
+          className: `${this.type}-popup`,
           autoClose: false,
           closeOnClick: false,
         })
       )
       .setPopupContent('Workout!')
       .openPopup();
+  }
+
+  _renderWorkout(workout) {
+    //首字母大写
+    const firstWorkUppercase = function (nameStr) {
+      nameStr = nameStr.toLowerCase();
+      nameStr = nameStr[0].toUpperCase() + nameStr.slice(1);
+      return nameStr;
+    };
+
+    // 通过三元运算符得到图标的样式，然后将跑步和骑车没有区别的distance和duration写出
+    let html = `
+    <li class="workout workout--${workout.type}" data-id="${workout.id}">
+    <h2 class="workout__title">${workout.description}</h2>
+    <div class="workout__details">
+      <span class="workout__icon">${
+        workout.type === 'running' ? '🦿' : '🚲'
+      }</span>
+      <span class="workout__value">${workout.distance}</span>
+      <span class="workout__unit">km</span>
+    </div>
+    <div class="workout__details">
+      <span class="workout__icon">⏱</span>
+      <span class="workout__value">${workout.duration}</span>
+      <span class="workout__unit">min</span>
+    </div>
+    `;
+
+    // 当状态时跑步时，加入步速和cadence的html
+    if (workout.type === 'running') {
+      html += `
+      <div class="workout__details">
+        <span class="workout__icon">⚡️</span>
+        <span class="workout__value">${workout.pace.toFixed(1)}</span>
+        <span class="workout__unit">min/km</span>
+     </div>
+      <div class="workout__details">
+        <span class="workout__icon">🦶🏼</span>
+        <span class="workout__value">${workout.cadence}</span>
+        <span class="workout__unit">spm</span>
+     </div>
+  </li> 
+      `;
+
+      // 当状态时骑车时，加入speed和提升高度（海拔）elevation的html
+      // Number.toFixed()后面跟的数字，是保留几位小数点
+      if (workout.type === 'cycling') {
+        html += `
+      <div class="workout__details">
+        <span class="workout__icon">⚡️</span>
+        <span class="workout__value">${workout.speed}</span>
+        <span class="workout__unit">km/h</span>
+      </div>
+      <div class="workout__details">
+        <span class="workout__icon">⛰</span>
+        <span class="workout__value">${workout.elevation}</span>
+        <span class="workout__unit">m</span>
+      </div>
+     </li> 
+        `;
+      }
+    }
+
+    // 将上面的html添加到form表单的后面，注意insetAdjacentHTML的用法，前者位置，后者内容
+    form.insertAdjacentHTML('afterend', html);
   }
 }
 

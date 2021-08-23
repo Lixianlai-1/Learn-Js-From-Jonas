@@ -27,6 +27,8 @@ class Workout {
 
 //注意要用extends继承
 class Running extends Workout {
+  type = 'running';
+
   constructor(coords, distance, duration, cadence) {
     super(coords, distance, duration);
     this.cadence = cadence;
@@ -41,6 +43,8 @@ class Running extends Workout {
 }
 
 class Cycling extends Workout {
+  type = 'cycling';
+
   constructor(coords, distance, duration, elevationGain) {
     super(coords, distance, duration);
     this.elevationGain = elevationGain;
@@ -61,6 +65,7 @@ console.log(run1, cyc1);
 class App {
   #map;
   #mapEvent;
+  #workout = [];
 
   constructor() {
     //创建实例时自动调用构造函数
@@ -124,21 +129,91 @@ class App {
     //注意这里的preventDefault后面要加()
     e.preventDefault();
 
-    //每次重新提交之后，输入框中的内容再次为空
+    const finiteHelper = (...inputs) =>
+      inputs.every(input => Number.isFinite(input));
+
+    const positiveNumHelper = (...inputs) => inputs.every(input => input > 0);
+
+    // //判断每个值都为有限数，因为是箭头函数，所以会自动return
+    // const validInputs = (...inputs) =>
+    //   inputs.every(input => Number.isFinite(input));
+
+    // //判断每个数是否为正数
+    // const positveNum = (...inputs) => {
+    //   return inputs.every(input => input > 0);
+    // };
+
+    const { lat, lng } = this.#mapEvent.latlng;
+    let workout;
+    const type = inputType.value;
+    const distance = +inputDistance.value;
+    const duration = +inputDuration.value;
+    // const cadence = +inputCadence.value;
+    // const elevationGain = +inputElevation.value;
+
+    // if (type === 'running') {
+    //   if (
+    //     !finiteHelper(distance, duration, cadence) ||
+    //     !positiveNumHelper(distance, duration, cadence)
+    //   ) {
+    //     console.log(type, distance, cadence);
+
+    //     alert('输入正数和有限数');
+    //     return;
+    //   }
+
+    //   workout = new Running([lat, lng], distance, duration, cadence);
+    // }
+    // If workout running, create running object
+
+    if (type === 'running') {
+      const cadence = +inputCadence.value;
+
+      // Check value is valid or not
+      if (
+        !finiteHelper(distance, duration, cadence) ||
+        !positiveNumHelper(distance, duration, cadence)
+      ) {
+        console.log(distance, duration, cadence);
+        return alert('所有值都需要输入正数哦');
+      }
+
+      workout = new Running([lat, lng], distance, duration, cadence);
+    }
+
+    if (type === 'cycling') {
+      if (
+        !finiteHelper(distance, duration, elevationGain) ||
+        !positiveNumHelper(distance, duration)
+      ) {
+        alert('输入正数和有限数');
+        return;
+      }
+
+      workout = new Cycling([lat, lng], distance, duration, elevationGain);
+    }
+
+    this.#workout.push(workout);
+    console.log(this.#workout);
+
+    //每次重新提交之后，输入框中的内容再次为空,注意要把这部分内容放在下方，不然submit事件形成的新的输入值，就变成了空字符串，就会变转化为0，程序就不能正常运行
     inputDuration.value =
       inputDistance.value =
       inputCadence.value =
       inputElevation.value =
         '';
 
-    const { lat, lng } = this.#mapEvent.latlng;
-    L.marker([lat, lng])
+    this._renderMarker(workout);
+  }
+
+  _renderMarker(workout) {
+    L.marker(workout.coords)
       .addTo(this.#map)
       .bindPopup(
         L.popup({
           maxWidth: 300,
           minWidth: 50,
-          className: 'running-popup',
+          className: `${workout.type}-popup`,
           autoClose: false,
           closeOnClick: false,
         })
