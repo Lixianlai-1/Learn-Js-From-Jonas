@@ -1,7 +1,7 @@
 'use strict';
 
-// prettier-ignore
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+// // prettier-ignore
+// const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 const form = document.querySelector('.form');
 const containerWorkouts = document.querySelector('.workouts');
@@ -23,6 +23,40 @@ class Workout {
     this.distance = distance;
     this.duration = duration;
   }
+
+  _setDescription() {
+    // prettier-ignore
+    const months =  ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${
+      months[this.date.getMonth()]
+    } ${this.date.getDay()}`;
+
+    // _setDescriptioin() {
+    //   // prettier-ignore
+    //   const months = [
+    //     'January',
+    //     'February',
+    //     'March',
+    //     'April',
+    //     'May',
+    //     'June',
+    //     'July',
+    //     'August',
+    //     'September',
+    //     'October',
+    //     'November',
+    //     'December',
+    //   ];
+
+    //   // 首字母大写并用slice方法与后面的字符串拼接
+    //   // 通过Date和getMonth得到具体的数字，然后将其作为索引值，得到月份数组中的内容
+    //   // getDate得到当月的多少号
+    //   this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${
+    //     months[this.date.getMonth()]
+    //   } ${this.date.getDate()}
+    //   `;
+  }
 }
 
 //注意要用extends继承
@@ -34,6 +68,7 @@ class Running extends Workout {
     this.cadence = cadence;
 
     this.calcPace();
+    this._setDescription();
   }
 
   calcPace() {
@@ -50,6 +85,7 @@ class Cycling extends Workout {
     this.elevationGain = elevationGain;
 
     this.calcSpeed();
+    this._setDescription();
   }
 
   calcSpeed() {
@@ -62,6 +98,9 @@ const run1 = new Running([29, 103], 30, 100, 100);
 const cyc1 = new Cycling([29, 103], 30, 100, 100);
 console.log(run1, cyc1);
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 class App {
   #map;
   #mapEvent;
@@ -72,6 +111,7 @@ class App {
     this._getPosition();
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleElevationField);
+    containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
   }
 
   _getPosition() {
@@ -119,6 +159,19 @@ class App {
     // inputDuration.focus();
   }
 
+  _hiddenForm() {
+    // 让填写表单的空格隐藏，新出现的表单会在原有的位置上出现
+    form.style.display = 'none';
+
+    // 隐藏表单
+    form.classList.add('hidden');
+
+    // 如果不设置这一步，用户再次点击时，不会出现输入值的表单
+    setTimeout(function () {
+      form.style.display = 'grid';
+    }, 1000);
+  }
+
   _toggleElevationField() {
     //选择running和cycling时，第四个输入框的变化
     inputElevation.closest('.form__row').classList.toggle('form__row--hidden');
@@ -149,7 +202,6 @@ class App {
     const distance = +inputDistance.value;
     const duration = +inputDuration.value;
     // const cadence = +inputCadence.value;
-    // const elevationGain = +inputElevation.value;
 
     // if (type === 'running') {
     //   if (
@@ -182,6 +234,7 @@ class App {
     }
 
     if (type === 'cycling') {
+      const elevationGain = +inputElevation.value;
       if (
         !finiteHelper(distance, duration, elevationGain) ||
         !positiveNumHelper(distance, duration)
@@ -204,6 +257,10 @@ class App {
         '';
 
     this._renderMarker(workout);
+    this._renderWorkout(workout);
+
+    // 隐藏form
+    this._hiddenForm();
   }
 
   _renderMarker(workout) {
@@ -220,6 +277,76 @@ class App {
       )
       .setPopupContent('Workout!')
       .openPopup();
+  }
+
+  // 找到HTMl并设置相关参数
+  _renderWorkout(workout) {
+    let html = `
+    <li class="workout workout--${workout.type}" data-id="${workout.id}">
+    <h2 class="workout__title">${workout.description}</h2>
+    <div class="workout__details">
+      <span class="workout__icon">${
+        workout.type === 'running' ? '🦿' : '🚲'
+      }</span>
+      <span class="workout__value">${workout.distance}</span>
+      <span class="workout__unit">km</span>
+    </div>
+    <div class="workout__details">
+      <span class="workout__icon">⏱</span>
+      <span class="workout__value">${workout.duration}</span>
+      <span class="workout__unit">min</span>
+    </div>
+    `;
+
+    // 当状态时跑步时，加入步速和cadence的html
+    if (workout.type === 'running') {
+      html += `
+      <div class="workout__details">
+        <span class="workout__icon">⚡️</span>
+        <span class="workout__value">${workout.pace.toFixed(1)}</span>
+        <span class="workout__unit">min/km</span>
+     </div>
+      <div class="workout__details">
+        <span class="workout__icon">🦶🏼</span>
+        <span class="workout__value">${workout.cadence}</span>
+        <span class="workout__unit">spm</span>
+     </div>
+     </li> 
+      `;
+    }
+
+    // 当状态时骑车时，加入speed和提升高度（海拔）elevation的html
+    // Number.toFixed()后面跟的数字，是保留几位小数点
+    //注意下方是想要获得对象中的属性，而不是用户输入的值，所以我需要写workout.elevationGain（即上面的属性名elevationGain）
+    if (workout.type === 'cycling') {
+      console.log(workout);
+      html += `
+      <div class="workout__details">
+        <span class="workout__icon">⚡️</span>
+        <span class="workout__value">${workout.speed}</span>
+        <span class="workout__unit">km/h</span>
+      </div>
+      <div class="workout__details">
+        <span class="workout__icon">⛰</span>
+        <span class="workout__value">${workout.elevationGain}</span>
+        <span class="workout__unit">m</span>
+      </div>
+     </li> 
+        `;
+    }
+
+    form.insertAdjacentHTML('afterend', html);
+  }
+
+  _moveToPopup(event) {
+    const workoutEL = event.target.closest('.workout');
+    const workout = this.#workout.find(
+      workout => workout.id === workoutEL.dataset.id
+    );
+    this.#map.setView(workout.coords, 15, {
+      animation: false,
+      duration: 1,
+    });
   }
 }
 

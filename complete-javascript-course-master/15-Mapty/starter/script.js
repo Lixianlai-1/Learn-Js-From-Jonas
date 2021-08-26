@@ -7,10 +7,21 @@ const inputDistance = document.querySelector('.form__input--distance');
 const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
+const editButton = document.querySelector('.editBtn');
+
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
 
 class Workout {
   //Public field，为什么要设置这两个部分
   date = new Date();
+
+  // 设置public instance fields并利用它
+  clicks = 0;
+
+  click() {
+    this.clicks++;
+  }
 
   //得到现在的时间
   id = (Date.now() + '').slice(-10);
@@ -93,15 +104,21 @@ const run1 = new Running([29, 102], 111, 30, 178);
 const cycling1 = new Cycling([29, 102], 111, 30, 178);
 console.log(run1, cycling1);
 
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
 class App {
   #map;
+  #mapZoom = 15;
   #mapEvent;
   #workouts = [];
   type;
 
   constructor() {
-    //创建实例时自动调用构造函数
+    // 创建实例时自动调用构造函数
     this._getPosition();
+
+    // 得到存储
+    this._getLocalStorage();
 
     //在使用addEventListener时，被调用的函数的内部的this，会变成正在调用的form，而我们在其内部又需要使用类App中的内容，所以这里需要绑定this，以便于读取类App中的其他内容
     form.addEventListener('submit', this._newWorkout.bind(this));
@@ -111,7 +128,15 @@ class App {
 
     // this._toggleElevationField();
     // this._newWorkout();
+
+    // 在点击左边的列表时，执行函数，通过data-id找到数组的位置
+    // 在使用监听事件后，注意this会变成监听的内容，而我在_moveToPopup中想要的this是App对象，所以需要绑定this
+    containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
+
+    editButton.addEventListener('click', this._editInput.bind(this));
   }
+
+  _editInput() {}
 
   _getPosition() {
     navigator.geolocation.getCurrentPosition(
@@ -131,7 +156,7 @@ class App {
     const coords = [latitude, longitude];
     // console.log(`www.google.com/maps/@${longitude},${latitude}`);
 
-    this.#map = L.map('map').setView(coords, 18);
+    this.#map = L.map('map').setView(coords, this.#mapZoom);
 
     //地图的信息和地图的样式，必不可少
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {
@@ -140,12 +165,18 @@ class App {
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(this.#map);
 
-    L.marker([latitude, longitude]).addTo(this.#map);
+    // L.marker([latitude, longitude]).addTo(this.#map);
     // this._showForm();
 
     //这个on方法是leflet库自带的，点击后返回一个originalEvent事件，中有latlng属性，分别是lat和lng（经纬度）
     //之所以要bind绑定this，是因为找到_showForm后，其内部的this变成了#map，而在给this.#mapEvent = event赋值的时候，需要从类App中得到#mapEvent，所以这里面的this就必须是类对象App，所以在这里需要绑定this
     this.#map.on('click', this._showForm.bind(this));
+
+    // 之所以要把这一步放在这里，而不是直接放在_getLoaclStorage，是因为需要this.#map加载之后，才能读取Marker，这也就是下一步要学习的异步的内容
+    // this.#workouts.forEach(workout => this._renderWorkoutMaker(workout));
+    this.#workouts.forEach(work => {
+      this._renderWorkoutMaker(work);
+    });
   }
 
   _showForm(event) {
@@ -260,10 +291,15 @@ class App {
     // 这里相当于是直接调用这个函数，其中的this没有改变，所以不需要用bind(this)
     // 必须在此处调用，因为需要用到workout
     this._renderWorkoutMaker(workout);
+
+    // Render Workout on list
     this._renderWorkout(workout);
 
     //让之前的输入表单消失
     this._hiddenForm();
+
+    // Set local storage to all workouts
+    this._setLocalStorage();
   }
 
   _renderWorkoutMaker(workout) {
@@ -279,22 +315,26 @@ class App {
           closeOnClick: false,
         })
       )
-      .setPopupContent('Workout!')
+      .setPopupContent(
+        // popup内容绑定
+        `${workout.type === 'running' ? '🦿' : '🚲'} ${workout.description}`
+      )
       .openPopup();
   }
 
   _renderWorkout(workout) {
     //首字母大写
     const firstWorkUppercase = function (nameStr) {
-      nameStr = nameStr.toLowerCase();
-      nameStr = nameStr[0].toUpperCase() + nameStr.slice(1);
+      nameStr = `${nameStr[0].toUpperCase()}${nameStr.slice(1)};`;
       return nameStr;
     };
+    // alert(workout.type);
 
     // 通过三元运算符得到图标的样式，然后将跑步和骑车没有区别的distance和duration写出
     let html = `
     <li class="workout workout--${workout.type}" data-id="${workout.id}">
     <h2 class="workout__title">${workout.description}</h2>
+    <button class="editBtn">Edit</button>
     <div class="workout__details">
       <span class="workout__icon">${
         workout.type === 'running' ? '🦿' : '🚲'
@@ -322,13 +362,16 @@ class App {
         <span class="workout__value">${workout.cadence}</span>
         <span class="workout__unit">spm</span>
      </div>
-  </li> 
+     </li> 
       `;
+    }
 
-      // 当状态时骑车时，加入speed和提升高度（海拔）elevation的html
-      // Number.toFixed()后面跟的数字，是保留几位小数点
-      if (workout.type === 'cycling') {
-        html += `
+    // 当状态时骑车时，加入speed和提升高度（海拔）elevation的html
+    // Number.toFixed()后面跟的数字，是保留几位小数点
+    //注意下方是想要获得对象中的属性，而不是用户输入的值，所以我需要写workout.elevationGain（即上面的属性名elevationGain）
+    if (workout.type === 'cycling') {
+      console.log(workout);
+      html += `
       <div class="workout__details">
         <span class="workout__icon">⚡️</span>
         <span class="workout__value">${workout.speed}</span>
@@ -336,16 +379,87 @@ class App {
       </div>
       <div class="workout__details">
         <span class="workout__icon">⛰</span>
-        <span class="workout__value">${workout.elevation}</span>
+        <span class="workout__value">${workout.elevationGain}</span>
         <span class="workout__unit">m</span>
       </div>
      </li> 
         `;
-      }
     }
 
     // 将上面的html添加到form表单的后面，注意insetAdjacentHTML的用法，前者位置，后者内容
     form.insertAdjacentHTML('afterend', html);
+  }
+
+  _moveToPopup(event) {
+    // mouseEvent事件
+    // console.log(event);
+
+    // 找到点击的那个部分
+    // console.log(event.target);
+
+    // 找到点击部分所在的那个workout栏
+    const workoutEl = event.target.closest('.workout');
+    // console.log(workoutEl);
+
+    //如果点击的地方返回的是null，那么返回
+    if (!workoutEl) return;
+
+    // 锻炼对象集合的数组
+    // console.log(this.#workouts);
+
+    // 如何读取HTML中的自定义属性，用dataset
+    // 用find方法找到满足条件的第一个workout
+    const workout = this.#workouts.find(
+      workout => workout.id === workoutEl.dataset.id
+    );
+    // console.log(workout);
+
+    // leaflet中的setView(),第一个参数是坐标数组，第二个坐标是缩放的程度
+    // 通过设置private instance field集中设置缩放程度
+    this.#map.setView(workout.coords, this.#mapZoom, {
+      // 如果没有设置{ animate: true }，在看不到坐标点的位置点击相应workout，会直接出现到那个位置，而不是平移
+      animate: true,
+      // 设置动画完成的时间
+      duration: 1,
+    });
+
+    // workout.click();
+    console.log(workout);
+  }
+
+  // 将用户操作的workout数组存储到localStorage中
+  // JSON.stringify将一个 JavaScript 对象或值转换为 JSON 字符串
+  _setLocalStorage() {
+    // 下方为键值对
+    localStorage.setItem('workouts', JSON.stringify(this.#workouts));
+  }
+
+  _getLocalStorage() {
+    // 解析JSON字符串
+    const data = JSON.parse(localStorage.getItem('workouts'));
+    // alert(data);
+
+    // 如果是null，就停止执行
+    if (!data) return;
+
+    // 将之前存储的数据设置到#workouts
+    this.#workouts = data;
+
+    // 保留并渲染左边的锻炼框
+    // this.#workouts.forEach(workout => this._renderWorkout(workout));
+
+    this.#workouts.forEach(work => {
+      this._renderWorkout(work);
+    });
+  }
+
+  // Set a public instance field to clear storage and reload the page
+  reset() {
+    // Storage 接口的 removeItem() 方法，接受一个键名作为参数，会从给定的Storage对象中删除该键名（如果存在）。 如果没有与该给定键名匹配的项，则此方法将不执行任何操作。
+    localStorage.removeItem('workouts');
+
+    // Location.reload() 方法用来刷新当前页面。该方法只有一个参数，当值为 true 时，将强制浏览器从服务器加载页面资源，当值为 false 或者未传参时，浏览器则可能从缓存中读取页面。
+    location.reload();
   }
 }
 
