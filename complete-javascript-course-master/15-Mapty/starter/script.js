@@ -176,6 +176,7 @@ class App {
     // this.#workouts.forEach(workout => this._renderWorkoutMaker(workout));
     this.#workouts.forEach(work => {
       this._renderWorkoutMaker(work);
+      this._renderWorkout(work);
     });
   }
 

@@ -685,13 +685,7 @@ const getJSON = function (url) {
 const get3Countries = async function (c1, c2, c3) {
   // 注意使用try-catch
   try {
-    const data = await Promise.all([
-      getJSON(`https://restcountries.eu/rest/v2/name/${c1}`),
-      getJSON(`https://restcountries.eu/rest/v2/name/${c2}`),
-      getJSON(`https://restcountries.eu/rest/v2/name/${c3}`),
-    ]);
-    // 下面代表每一个元素都执行右边的函数，然后创造一个新的数组
-    console.log(data.map(d => d[0].capital));
+    const data = Promise.all(getJSON);
     // const [data1] = await getJSON(
     //   `https://restcountries.eu/rest/v2/name/${c1}`
     // );

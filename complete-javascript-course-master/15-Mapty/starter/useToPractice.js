@@ -105,13 +105,17 @@ class App {
   #map;
   #mapEvent;
   #workout = [];
+  #mapZoom = 13;
 
   constructor() {
     //创建实例时自动调用构造函数
     this._getPosition();
+    this._getLocalStorage();
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleElevationField);
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
+
+    this._getLocalStorage();
   }
 
   _getPosition() {
@@ -132,7 +136,7 @@ class App {
     const coords = [latitude, longitude];
     // console.log(`www.google.com/maps/@${longitude},${latitude}`);
 
-    this.#map = L.map('map').setView(coords, 18);
+    this.#map = L.map('map').setView(coords, this.#mapZoom);
 
     //地图的信息和地图的样式，必不可少
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {
@@ -146,6 +150,11 @@ class App {
 
     //这个on方法是leflet库自带的，点击后返回一个originalEvent事件，中有latlng属性，分别是lat和lng（经纬度）
     this.#map.on('click', this._showForm.bind(this));
+
+    this.#workout.forEach(workout => {
+      this._renderWorkout(workout);
+      this._renderMarker(workout);
+    });
   }
 
   _showForm(event) {
@@ -261,6 +270,9 @@ class App {
 
     // 隐藏form
     this._hiddenForm();
+
+    // 设置缓存数据
+    this._setLocalStorage();
   }
 
   _renderMarker(workout) {
@@ -275,7 +287,7 @@ class App {
           closeOnClick: false,
         })
       )
-      .setPopupContent('Workout!')
+      .setPopupContent(`${workout.description}`)
       .openPopup();
   }
 
@@ -288,7 +300,7 @@ class App {
       <span class="workout__icon">${
         workout.type === 'running' ? '🦿' : '🚲'
       }</span>
-      <span class="workout__value">${workout.distance}</span>
+      <span class="workout__value">${workout.distance.toFixed(1)}</span>
       <span class="workout__unit">km</span>
     </div>
     <div class="workout__details">
@@ -340,13 +352,32 @@ class App {
 
   _moveToPopup(event) {
     const workoutEL = event.target.closest('.workout');
+
+    // 如果是null，就return不再执行
+    if (!workoutEL) return;
+
     const workout = this.#workout.find(
       workout => workout.id === workoutEL.dataset.id
     );
-    this.#map.setView(workout.coords, 15, {
-      animation: false,
+
+    this.#map.setView(workout.coords, this.#mapZoom, {
+      // 注意是animate，不然动画不能生效
+      animate: true,
       duration: 1,
     });
+  }
+
+  _setLocalStorage() {
+    localStorage.setItem('workout', JSON.stringify(this.#workout));
+  }
+
+  _getLocalStorage() {
+    const data = JSON.parse(localStorage.getItem('workout'));
+
+    if (!data) return;
+
+    // 把从浏览器储存中得到的数据，储存在private field中
+    this.#workout = data;
   }
 }
 
