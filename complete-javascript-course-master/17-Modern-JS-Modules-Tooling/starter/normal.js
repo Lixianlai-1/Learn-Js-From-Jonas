@@ -1,0 +1,1 @@
+console.log('既不是import，也不是export')

@@ -51,7 +51,6 @@
 
 import { addToCart, cart } from './shoppingCar.js';
 
-// 在立即调用函数逅，下面的函数就已经执行完了（不在Call Stack中了），但其返回了这里面的变量和函数，当我们调用这些变量或函数时，就会找到原来的变量和函数，因为闭包会记住它们（即使已经不在call stack中）
 const shoppingCar2 = (function () {
   const cart = [];
   const shippingCost = 10;

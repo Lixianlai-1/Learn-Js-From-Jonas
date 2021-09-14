@@ -4,8 +4,6 @@
 // import {sayWords } from './shoppingCar.js'
 // sayWords()
 
-// import { cart } from './shoppingCar';
-
 // console.log('Say something in import file')
 // // --------------------------------------------------
 
@@ -32,7 +30,7 @@
 // add(1)
 // --------------------------------------------------
 
-// import { addToCart, cart } from './shoppingCar.js';
+// import {addToCart, cart} from './shoppingCar.js'
 
 // addToCart('ship',2)
 // addToCart('ship',4)
@@ -43,15 +41,10 @@
 
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
-// The Module Pattern
 // 立即调用函数
 // 这一部分的意义是什么？
 
 // 因为立刻调用函数后会消失，所以将其值存储在变量中
-
-import { addToCart, cart } from './shoppingCar.js';
-
-// 在立即调用函数逅，下面的函数就已经执行完了（不在Call Stack中了），但其返回了这里面的变量和函数，当我们调用这些变量或函数时，就会找到原来的变量和函数，因为闭包会记住它们（即使已经不在call stack中）
 const shoppingCar2 = (function () {
   const cart = [];
   const shippingCost = 10;
@@ -60,7 +53,7 @@ const shoppingCar2 = (function () {
 
   const addToCart = function (product, quantity) {
     cart.push({ product, quantity });
-    console.log(`Product:${product}, Count:${quantity} added to the cart`);
+    console.log(`${product}, ${quantity} added to the cart`);
   };
 
   const orderStock = function (product, quantity) {
@@ -68,8 +61,6 @@ const shoppingCar2 = (function () {
   };
 
   return {
-    //   闭包的使用
-    // 1.这几个变量和函数都是在IFFE中声明的
     addToCart,
     cart,
     totalPrice,
@@ -79,7 +70,5 @@ const shoppingCar2 = (function () {
 
 console.log(shoppingCar2);
 
-// 函数外调用函数内部的addToCart,这个部分不能在浏览器的控制台中使用，因为Module是private的
+// 函数外调用函数内部的addToCart
 shoppingCar2.addToCart('ship', 1);
-
-console.log(cart);
