@@ -10,9 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "leaflet": "^1.7.1",
-    "lodash-es": "^4.17.21"
-  },
-  "devDependencies": {
-    "parcel": "^2.0.0-rc.0"
+    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
+    "lodash.clonedeep": "^4.5.0"
   }
 }
+t

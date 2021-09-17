@@ -84,26 +84,8 @@
 
 // console.log(cart);
 
+
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 // NPM、Lodash
 
-// 运用npm进行深拷贝
-// import { cloneDeep } from './node_modules';
-
-const state = {
-  cart: [
-    {
-      product: 'bread',
-      quantity: 1,
-    },
-  ],
-  user: { login: true },
-};
-
-const copy1 = Object.assign({}, state);
-// const copy2 = cloneDeep(state)
-
-state.user.login = false;
-
-console.log(copy1);

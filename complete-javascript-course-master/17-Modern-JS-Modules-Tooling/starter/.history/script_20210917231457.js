@@ -102,7 +102,7 @@ const state = {
 };
 
 const copy1 = Object.assign({}, state);
-// const copy2 = cloneDeep(state)
+const copy2 = cloneDeep(state)
 
 state.user.login = false;
 

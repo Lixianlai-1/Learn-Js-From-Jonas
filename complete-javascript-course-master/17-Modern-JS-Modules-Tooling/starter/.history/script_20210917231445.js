@@ -89,7 +89,7 @@
 // NPM、Lodash
 
 // 运用npm进行深拷贝
-// import { cloneDeep } from './node_modules';
+import { cloneDeep } from './node_modules';
 
 const state = {
   cart: [
@@ -102,7 +102,7 @@ const state = {
 };
 
 const copy1 = Object.assign({}, state);
-// const copy2 = cloneDeep(state)
+const copy2 = cloneDeep
 
 state.user.login = false;
 
