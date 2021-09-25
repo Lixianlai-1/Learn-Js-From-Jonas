@@ -93,9 +93,10 @@
 // import cloneDeep from 'lodash-es';
 // import apply from './node_modules/lodash-es';
 // import create from 'lodash-es';
-import apply from './node_modules/lodash-es/_apply.js';
-console.log(apply);
+// import apply from './node_modules/lodash-es/_apply.js';
+// console.log(apply);
 
+console.log('111');
 const state = {
   cart: [
     {
@@ -118,3 +119,25 @@ console.log(copy1);
 //   // 你可以调用 module.hot.accept 并赋予一个回调函数，该函数会在模块或其他依赖项被更新时执行
 //   module.hot.accept();
 // }
+
+class Person {
+  #greeting = 'Hey';
+  constructor(name) {
+    this.name = name;
+    console.log(`${this.#greeting} ${this.name}`);
+  }
+}
+
+const Mark = new Person('Mark');
+
+console.log('Jonas' ?? null);
+
+const arr = [1, 2, 3];
+
+// find是es6的，箭头函数也是es6的
+arr.find(el => el > 1);
+
+// Promise也是ES6的，同样没有转化为es5
+Promise.resolve('TEST').then(x => console.log(x));
+
+import 'core-js/stable';

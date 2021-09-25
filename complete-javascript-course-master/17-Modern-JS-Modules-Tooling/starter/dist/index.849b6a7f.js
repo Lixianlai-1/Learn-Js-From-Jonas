@@ -455,7 +455,6 @@ function hmrAcceptRun(bundle, id) {
 }
 
 },{}],"eoBgn":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 // // import module
 // // 引入的地方要写js，不然就报错了
 // // 在有import的地方，即使没有export，普通的js文件也要先执行，总之import后执行
@@ -528,9 +527,9 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 // import cloneDeep from 'lodash-es';
 // import apply from './node_modules/lodash-es';
 // import create from 'lodash-es';
-var _applyJs = require("./node_modules/lodash-es/_apply.js");
-var _applyJsDefault = parcelHelpers.interopDefault(_applyJs);
-console.log(_applyJsDefault.default);
+// import apply from './node_modules/lodash-es/_apply.js';
+// console.log(apply);
+console.log('111');
 const state = {
     cart: [
         {
@@ -546,39 +545,33 @@ const copy1 = Object.assign({
 }, state);
 // const copy2 = cloneDeep(state);
 state.user.login = false;
-console.log(copy1); // console.log(copy2);
- // if (module.hot) {
- //   // 你可以调用 module.hot.accept 并赋予一个回调函数，该函数会在模块或其他依赖项被更新时执行
- //   module.hot.accept();
- // }
-
-},{"./node_modules/lodash-es/_apply.js":"jcowS","@parcel/transformer-js/src/esmodule-helpers.js":"JacNc"}],"jcowS":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-/**
- * A faster alternative to `Function#apply`, this function invokes `func`
- * with the `this` binding of `thisArg` and the arguments of `args`.
- *
- * @private
- * @param {Function} func The function to invoke.
- * @param {*} thisArg The `this` binding of `func`.
- * @param {Array} args The arguments to invoke `func` with.
- * @returns {*} Returns the result of `func`.
- */ function apply(func, thisArg, args) {
-    switch(args.length){
-        case 0:
-            return func.call(thisArg);
-        case 1:
-            return func.call(thisArg, args[0]);
-        case 2:
-            return func.call(thisArg, args[0], args[1]);
-        case 3:
-            return func.call(thisArg, args[0], args[1], args[2]);
+console.log(copy1);
+// console.log(copy2);
+// if (module.hot) {
+//   // 你可以调用 module.hot.accept 并赋予一个回调函数，该函数会在模块或其他依赖项被更新时执行
+//   module.hot.accept();
+// }
+class Person {
+    #greeting = 'Hey';
+    constructor(name){
+        this.name = name;
+        console.log(`${this.#greeting} ${this.name}`);
     }
-    return func.apply(thisArg, args);
 }
-exports.default = apply;
+const Mark = new Person('Mark');
+console.log('Jonas' ?? null);
+const arr = [
+    1,
+    2,
+    3
+];
+// find是es6的，箭头函数也是es6的，都没有转化为ES5
+arr.find((el)=>el > 1
+);
+// Promise也是ES6的，同样没有转化为es5
+Promise.resolve('TEST').then((x)=>console.log(x)
+);
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"JacNc"}]},["1Osjd","eoBgn"], "eoBgn", "parcelRequire7e89")
+},{}]},["1Osjd","eoBgn"], "eoBgn", "parcelRequire7e89")
 
 //# sourceMappingURL=index.849b6a7f.js.map
